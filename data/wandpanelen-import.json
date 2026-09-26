@@ -1,0 +1,220 @@
+{
+  "importedAt": "2026-09-21T02:53:54.305Z",
+  "source": "https://diamondflame.nl/collections/akoestische-houten-wandpanelen/products.json",
+  "count": 7,
+  "products": [
+    {
+      "id": "6928359358577",
+      "slug": "akoestische-wandpanelen-zwart-eiken",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Zwart Eiken - Lattenwand - Akupanel",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.69,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/4-rotated.jpg?v=1772150886",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Zwarteiken2_29fa99ed-62a9-4020-8b58-c7c35b02732e.jpg?v=1772150886",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Zwarteiken1_1.jpg?v=1772150886",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/1-1-rotated.jpg?v=1724277772",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Zwarteiken4.jpg?v=1732036690"
+      ],
+      "available": true,
+      "variants": [
+        {
+          "id": "40393830465649",
+          "title": "Default Title",
+          "sku": "Akupanel Black oak 280x60cm",
+          "available": true,
+          "price": 0.69,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-zwart-eiken"
+    },
+    {
+      "id": "6928359489649",
+      "slug": "akoestische-wandpanelen-gerookt-eiken",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Gerookt Eiken - Lattenwand - Akupanel",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.69,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "<p>Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.</p>",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/1-4.jpg?v=1772150867",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/3-2.jpg?v=1772150867",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Gerookteiken1.jpg?v=1772150867",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Gerookteiken3.jpg?v=1772150867",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/4-2.jpg?v=1772150867"
+      ],
+      "available": true,
+      "variants": [
+        {
+          "id": "40393830596721",
+          "title": "Default Title",
+          "sku": "Akupanel Smoke OAK 280x60 cm",
+          "available": true,
+          "price": 0.69,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-gerookt-eiken"
+    },
+    {
+      "id": "6928359391345",
+      "slug": "akoestische-wandpanelen-walnoot-eiken",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Walnoot Eiken - Lattenwand - Akupanel - 3 zijdig houtfineer",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.89,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Walnoot-eiken_1.png?v=1772150521",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Walnoot-eiken_2.jpg?v=1772150521",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Walnoot-eiken_3.jpg?v=1772150521",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Walnoot-eiken_4.jpg?v=1772150521",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/1-2.jpg?v=1772150521",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/4-1-rotated_41573b4e-ae35-4aff-9ee8-762bb25c5798.jpg?v=1772150521"
+      ],
+      "available": true,
+      "variants": [
+        {
+          "id": "40393830498417",
+          "title": "Default Title",
+          "sku": "Akupanel walnut 280x60 cm",
+          "available": true,
+          "price": 0.89,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-walnoot-eiken"
+    },
+    {
+      "id": "6958096744561",
+      "slug": "akoestische-wandpanelen-300-x-60-cm-wit-eiken-lattenwand-akupanel",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Wit Eiken met wit vilt - Lattenwand - Akupanel - 3 Zijdig Houtfineer",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.89,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Witeiken4.webp?v=1772150775",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Witeiken1.jpg?v=1772150775",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Witeiken2.jpg?v=1772150775",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Witeiken3.jpg?v=1772150775",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Witeiken5.webp?v=1732036875"
+      ],
+      "available": true,
+      "variants": [
+        {
+          "id": "40505524748401",
+          "title": "Default Title",
+          "sku": "Akupanel White 280x60 cm",
+          "available": true,
+          "price": 0.89,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-300-x-60-cm-wit-eiken-lattenwand-akupanel"
+    },
+    {
+      "id": "6928359456881",
+      "slug": "akoestische-wandpanelen-grijs-eiken",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Grijs Eiken - Lattenwand - Akupanel - 3 Zijdig houtfineer",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.89,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Grijs-eiken_1.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Grijs-eiken_2.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Grijs-eiken_3.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Grijs-eiken_4.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Grijs-eiken_5.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/1-3.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/3-1_43b575f1-6b32-41e1-83bb-4b22f3f880d7.jpg?v=1772150831",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/products/5.jpg?v=1772150831"
+      ],
+      "available": true,
+      "variants": [
+        {
+          "id": "40393830563953",
+          "title": "Default Title",
+          "sku": "Akupanel Grey 280x60 cm",
+          "available": true,
+          "price": 0.89,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-grijs-eiken"
+    },
+    {
+      "id": "7205015027825",
+      "slug": "akoestische-wandpanelen-280-x-60-cm-beige-vilt-lattenwand-akupanel-kopie",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Beige mat met beige vilt - Lattenwand - Akupanel",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.89,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "<p>NIEUW! De nieuwe 3 zijdige beige met beige vilt panelen zijn dan eindelijk op voorraad.<br></p>\n<p>Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.</p>",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/BEIGE_5.jpg?v=1772150657",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/BEIGE_2.jpg?v=1772150657",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/BEIGE_3.jpg?v=1768590076",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/BEIGE_4.jpg?v=1768589988"
+      ],
+      "available": false,
+      "variants": [
+        {
+          "id": "41225823912049",
+          "title": "Default Title",
+          "sku": "Akupanel Beige 280x60",
+          "available": false,
+          "price": 0.89,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-280-x-60-cm-beige-vilt-lattenwand-akupanel-kopie"
+    },
+    {
+      "id": "6928359161969",
+      "slug": "akoestische-wandpanelen-rustiek-naturel-eiken",
+      "title": "Akoestische wandpanelen - 280 x 60 cm - Rustiek Naturel Eiken - Lattenwand - Akupanel - 3 Zijdig houtfineer",
+      "vendor": "Diamondflame.nl",
+      "productType": "Wandpanelen",
+      "price": 0.89,
+      "compareAtPrice": 1.5,
+      "currency": "EUR",
+      "description": "<p>Vind je het moeilijk om te horen wat mensen zeggen? Problemen met slechte akoestiek zijn in veel kamers een groot probleem, maar met een lamellenwand of -plafond creëer je akoestisch welbevinden voor jezelf en de mensen met wie je je omringt.</p>",
+      "images": [
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Natural-Oak_5.jpg?v=1772150626",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Natural-Oak_3.jpg?v=1772150626",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Natural-Oak_1.jpg?v=1772150626",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Natural-Oak_2.jpg?v=1772150626",
+        "https://cdn.shopify.com/s/files/1/0556/9606/4625/files/Natural-Oak_4.jpg?v=1772150626"
+      ],
+      "available": true,
+      "variants": [
+        {
+          "id": "40393830269041",
+          "title": "Default Title",
+          "sku": "akupanel Natural oak 280x60cm",
+          "available": true,
+          "price": 0.89,
+          "compareAtPrice": 1.5
+        }
+      ],
+      "sourceUrl": "https://diamondflame.nl/products/akoestische-wandpanelen-rustiek-naturel-eiken"
+    }
+  ]
+}
