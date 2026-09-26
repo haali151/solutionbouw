@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ChangeEvent, ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
 
 /* =========================================================
    WALLMADE AI DESIGN STUDIO
+   Full designer + advanced controls + AI assistant
 ========================================================= */
 
 const WHATSAPP = "31643583800";
@@ -18,6 +19,107 @@ const initialConfig = {
   cabinet: "",
   wood: "",
   price: "",
+};
+
+type Language = "auto" | "nl" | "en" | "ar" | "tr" | "de";
+
+type DesignState = {
+  style: string;
+  cinewallWidth: string;
+  layoutAlignment: string;
+  symmetry: string;
+  heightStyle: string;
+
+  tvSize: string;
+  tvStyle: string;
+  tvPosition: string;
+  tvEmphasis: string;
+
+  fireplace: string;
+  fireplaceModel: string;
+  fireplaceWidth: string;
+  fireplacePosition: string;
+  fireplaceFinish: string;
+
+  shelves: string;
+  shelfPosition: string;
+  shelfShape: string;
+  shelfDepth: string;
+  shelfType: string;
+
+  woodEnabled: string;
+  woodType: string;
+  woodPosition: string;
+  woodStyle: string;
+
+  lightingEnabled: string;
+  lightingColor: string;
+  lightingStrength: string;
+  lightingPosition: string;
+
+  cabinetType: string;
+  cabinetWidth: string;
+  cabinetColor: string;
+  cabinetFinish: string;
+
+  wallColor: string;
+  finishStyle: string;
+  contrast: string;
+};
+
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+};
+
+type Version = {
+  image: string;
+  design: DesignState;
+};
+
+const defaultDesign: DesignState = {
+  style: "Modern",
+  cinewallWidth: "",
+  layoutAlignment: "Centered",
+  symmetry: "Symmetrical",
+  heightStyle: "Normal",
+
+  tvSize: "65",
+  tvStyle: "Standard",
+  tvPosition: "Center",
+  tvEmphasis: "Balanced",
+
+  fireplace: "Ja",
+  fireplaceModel: "",
+  fireplaceWidth: "Medium",
+  fireplacePosition: "Under TV",
+  fireplaceFinish: "Seamless",
+
+  shelves: "4",
+  shelfPosition: "Both sides",
+  shelfShape: "Rectangle",
+  shelfDepth: "Medium",
+  shelfType: "Open",
+
+  woodEnabled: "Nee",
+  woodType: "Natural Oak",
+  woodPosition: "Inside shelves only",
+  woodStyle: "Smooth",
+
+  lightingEnabled: "Ja",
+  lightingColor: "Warm",
+  lightingStrength: "Soft",
+  lightingPosition: "Top only",
+
+  cabinetType: "None",
+  cabinetWidth: "Auto",
+  cabinetColor: "Match wall",
+  cabinetFinish: "Minimal",
+
+  wallColor: "Warm beige",
+  finishStyle: "Smooth plaster",
+  contrast: "Balanced",
 };
 
 /* =========================================================
@@ -79,115 +181,6 @@ function IconUpload({ className = "h-6 w-6" }: { className?: string }) {
   );
 }
 
-function IconModern({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="4" y="4" width="16" height="16" rx="2" />
-      <path d="M9 4v16" />
-      <path d="M15 4v16" />
-    </svg>
-  );
-}
-
-function IconLuxury({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="m12 3 2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z" />
-      <path d="m18 16 .8 2.2L21 19l-2.2.8L18 22l-.8-2.2L15 19l2.2-.8L18 16Z" />
-    </svg>
-  );
-}
-
-function IconMinimal({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      className={className}
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="7" />
-    </svg>
-  );
-}
-
-function IconFireplace({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M12 22c4 0 7-2.7 7-6.5 0-4-3-6.5-5-8.5 0 3-1.2 4.3-2 5-1.4-1.2-2-3.2-1-6-3 2-6 5-6 9.5C5 19.3 8 22 12 22Z" />
-      <path d="M9.5 18c0-2 1.2-3.2 2.5-4.2.2 1.6 1 2.3 1.7 3 .8.7.8 2.1.3 3.2" />
-    </svg>
-  );
-}
-
-function IconWall({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <rect x="3.5" y="6" width="17" height="12" rx="2" />
-      <path d="M8 9h8" />
-      <path d="M8 12h8" />
-    </svg>
-  );
-}
-
-function IconArrow({
-  className = "h-4 w-4",
-}: {
-  className?: string;
-}) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-    >
-      <path d="M5 12h14" />
-      <path d="m14 7 5 5-5 5" />
-    </svg>
-  );
-}
-
 function IconMagic({ className = "h-5 w-5" }: { className?: string }) {
   return (
     <svg
@@ -210,37 +203,88 @@ function IconMagic({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
-/* =========================================================
-   SMALL UI ELEMENTS
-========================================================= */
-
-function StepBadge({
-  children,
-  icon,
-}: {
-  children?: ReactNode;
-  icon?: ReactNode;
-}) {
+function IconArrow({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#8e7548] bg-[radial-gradient(circle_at_top,#332b1b_0%,#19150f_65%,#0b0b0c_100%)] text-[12px] font-semibold tracking-[0.12em] text-[#d7b97d] shadow-[0_12px_28px_rgba(0,0,0,0.35)]">
-      {icon || children}
-    </div>
-  );
-}
-
-function SelectedMark({ active }: { active: boolean }) {
-  return (
-    <span
-      className={`flex h-7 w-7 items-center justify-center rounded-full border transition-all duration-300 ${
-        active
-          ? "border-[#d4b477] bg-[#d4b477] text-[#11110f] shadow-[0_5px_20px_rgba(212,180,119,0.3)]"
-          : "border-white/10 bg-white/[0.02] text-transparent"
-      }`}
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
     >
-      <IconCheck className="h-3.5 w-3.5" />
-    </span>
+      <path d="M5 12h14" />
+      <path d="m14 7 5 5-5 5" />
+    </svg>
   );
 }
+
+function IconSend({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="m22 2-7 20-4-9-9-4Z" />
+      <path d="M22 2 11 13" />
+    </svg>
+  );
+}
+
+function IconUndo({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M9 7 4 12l5 5" />
+      <path d="M4 12h9a6 6 0 0 1 6 6" />
+    </svg>
+  );
+}
+
+function IconSliders({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M4 6h10" />
+      <path d="M18 6h2" />
+      <path d="M4 12h2" />
+      <path d="M10 12h10" />
+      <path d="M4 18h7" />
+      <path d="M15 18h5" />
+      <circle cx="16" cy="6" r="2" />
+      <circle cx="8" cy="12" r="2" />
+      <circle cx="13" cy="18" r="2" />
+    </svg>
+  );
+}
+
+/* =========================================================
+   UI HELPERS
+========================================================= */
 
 function SmallCheck({ children }: { children: ReactNode }) {
   return (
@@ -253,6 +297,104 @@ function SmallCheck({ children }: { children: ReactNode }) {
   );
 }
 
+function SectionTitle({
+  eyebrow,
+  title,
+  text,
+}: {
+  eyebrow: string;
+  title: string;
+  text?: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-center gap-3">
+        <span className="h-px w-7 bg-[#8c7045]" />
+        <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-[#c4a166]">
+          {eyebrow}
+        </p>
+      </div>
+
+      <h2 className="mt-4 text-2xl font-medium tracking-tight">{title}</h2>
+
+      {text && (
+        <p className="mt-2 hidden text-xs leading-5 text-neutral-600 sm:block">{text}</p>
+      )}
+    </div>
+  );
+}
+
+function SelectField({
+  label,
+  value,
+  options,
+  onChange,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <label className={disabled ? "opacity-40" : ""}>
+      <span className="mb-2 block text-[11px] font-medium text-neutral-400">
+        {label}
+      </span>
+      <select
+        value={value}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+        className="w-full rounded-xl border border-white/[0.07] bg-[#111214] px-3 py-3 text-[12px] text-neutral-300 outline-none transition focus:border-[#8d7247] disabled:cursor-not-allowed"
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function ToggleChoice({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`rounded-xl border px-3 py-3 text-xs font-medium transition ${
+        active
+          ? "border-[#927647] bg-[#211b13] text-[#dfc186]"
+          : "border-white/[0.06] bg-[#131416] text-neutral-600"
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function languageLabel(value: Language) {
+  const labels: Record<Language, string> = {
+    auto: "Auto",
+    nl: "Nederlands",
+    en: "English",
+    ar: "العربية",
+    tr: "Türkçe",
+    de: "Deutsch",
+  };
+  return labels[value];
+}
+
 /* =========================================================
    PAGE
 ========================================================= */
@@ -263,16 +405,14 @@ export default function AIDesigner() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [image, setImage] = useState("");
 
-  const [style, setStyle] = useState("Modern");
-  const [tvSize, setTvSize] = useState("65");
-  const [fireplace, setFireplace] = useState("Ja");
-  const [shelves, setShelves] = useState("4");
-
+  const [design, setDesign] = useState<DesignState>(defaultDesign);
   const [generatedImage, setGeneratedImage] = useState("");
   const [requestMessage, setRequestMessage] = useState("");
 
   const [editing, setEditing] = useState(true);
   const [showOriginal, setShowOriginal] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -281,20 +421,83 @@ export default function AIDesigner() {
   const [contactOpen, setContactOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const [language, setLanguage] = useState<Language>("auto");
+  const [chatInput, setChatInput] = useState("");
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
+    {
+      id: "welcome",
+      role: "assistant",
+      content:
+        "Hallo! Ik ben jouw Wallmade AI Designer. Vraag mij gerust om je ontwerp aan te passen, bijvoorbeeld hout in de vakken, warmere verlichting, een bredere haard of een andere indeling.",
+    },
+  ]);
+  const [assistantLoading, setAssistantLoading] = useState(false);
+  const [assistantError, setAssistantError] = useState("");
+  const [versions, setVersions] = useState<Version[]>([]);
+
   const dialogRef = useRef<HTMLDialogElement>(null);
   const resultRef = useRef<HTMLElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
   const contactButtonRef = useRef<HTMLButtonElement>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement>(null);
 
   const busyRef = useRef(false);
   const controllerRef = useRef<AbortController | null>(null);
   const popupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const popupShownRef = useRef(false);
+  const autoContactRef = useRef(true);
 
   const resultVisible = Boolean(generatedImage) && !editing;
 
+  const updateDesign = <K extends keyof DesignState>(
+    key: K,
+    value: DesignState[K]
+  ) => {
+    setDesign((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  };
+
   /* =========================================================
-     READ CONFIG FROM URL
+     MOBILE SAFARI STABILITY
+  ========================================================= */
+
+  useEffect(() => {
+    const previousHtmlBackground =
+      document.documentElement.style.backgroundColor;
+    const previousBodyBackground =
+      document.body.style.backgroundColor;
+
+    document.documentElement.style.backgroundColor = "#08090a";
+    document.body.style.backgroundColor = "#08090a";
+
+    return () => {
+      document.documentElement.style.backgroundColor =
+        previousHtmlBackground;
+      document.body.style.backgroundColor =
+        previousBodyBackground;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mobileChatOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const previousOverscroll = document.body.style.overscrollBehavior;
+
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.overscrollBehavior = previousOverscroll;
+    };
+  }, [mobileChatOpen]);
+
+  /* =========================================================
+     URL CONFIG
   ========================================================= */
 
   useEffect(() => {
@@ -311,27 +514,48 @@ export default function AIDesigner() {
 
     setConfig(next);
 
-    if (next.type) {
-      setShelves(next.type.match(/\b(2|4|6)\b/)?.[1] || "0");
-    }
+    setDesign((current) => {
+      const nextDesign = { ...current };
 
-    if (next.fireplace) {
-      setFireplace(
-        /^(geen|nee)$/i.test(next.fireplace.trim()) ? "Nee" : "Ja"
-      );
-    }
+      if (next.width) nextDesign.cinewallWidth = next.width;
+
+      if (next.type) {
+        nextDesign.shelves =
+          next.type.match(/\b(2|4|6)\b/)?.[1] || nextDesign.shelves;
+      }
+
+      if (next.fireplace) {
+        nextDesign.fireplace = /^(geen|nee)$/i.test(next.fireplace.trim())
+          ? "Nee"
+          : "Ja";
+
+        if (!/^(geen|nee)$/i.test(next.fireplace.trim())) {
+          nextDesign.fireplaceModel = next.fireplace;
+        }
+      }
+
+      if (next.cabinet) {
+        nextDesign.cabinetType = /^(geen|nee|none)$/i.test(next.cabinet.trim())
+          ? "None"
+          : next.cabinet;
+      }
+
+      if (next.wood && !/^(geen|nee|no|false|0)$/i.test(next.wood.trim())) {
+        nextDesign.woodEnabled = "Ja";
+        nextDesign.woodType = next.wood;
+      }
+
+      return nextDesign;
+    });
 
     return () => {
       controllerRef.current?.abort();
-
-      if (popupTimerRef.current) {
-        clearTimeout(popupTimerRef.current);
-      }
+      if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
     };
   }, []);
 
   /* =========================================================
-     LOCAL IMAGE PREVIEW
+     IMAGE PREVIEW
   ========================================================= */
 
   useEffect(() => {
@@ -367,11 +591,15 @@ export default function AIDesigner() {
         block: "start",
         behavior: "smooth",
       });
-    } else if (popupTimerRef.current) {
-      clearTimeout(popupTimerRef.current);
-      popupTimerRef.current = null;
     }
   }, [resultVisible]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({
+      block: "nearest",
+      behavior: "smooth",
+    });
+  }, [chatHistory, assistantLoading]);
 
   /* =========================================================
      CONTACT DIALOG
@@ -379,67 +607,49 @@ export default function AIDesigner() {
 
   useEffect(() => {
     const dialog = dialogRef.current;
-
     if (!dialog) return;
 
     if (!contactOpen) {
-      if (dialog.open) {
-        dialog.close();
-      }
-
+      if (dialog.open) dialog.close();
       return;
     }
 
     const previousOverflow = document.body.style.overflow;
-
     document.body.style.overflow = "hidden";
 
-    if (!dialog.open) {
-      dialog.showModal();
-    }
+    if (!dialog.open) dialog.showModal();
 
     return () => {
       document.body.style.overflow = previousOverflow;
-
-      if (dialog.open) {
-        dialog.close();
-      }
+      if (dialog.open) dialog.close();
     };
   }, [contactOpen]);
 
-  /* =========================================================
-     CONTACT
-  ========================================================= */
-
   function openContact() {
-    if (popupTimerRef.current) {
-      clearTimeout(popupTimerRef.current);
-    }
+    if (popupTimerRef.current) clearTimeout(popupTimerRef.current);
 
     popupShownRef.current = true;
-
     setCopied(false);
     setContactOpen(true);
   }
 
   function onResultLoaded() {
+    if (!autoContactRef.current) return;
     if (popupShownRef.current || popupTimerRef.current) return;
 
     popupTimerRef.current = setTimeout(() => {
       popupTimerRef.current = null;
       popupShownRef.current = true;
-
       setContactOpen(true);
     }, 1800);
   }
 
   /* =========================================================
-     IMAGE
+     IMAGE UPLOAD
   ========================================================= */
 
   function handleImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-
     event.target.value = "";
 
     if (!file || busyRef.current) return;
@@ -455,73 +665,45 @@ export default function AIDesigner() {
     }
 
     setError("");
-
     setImageFile(file);
     setGeneratedImage("");
     setRequestMessage("");
     setShowOriginal(false);
+    setVersions([]);
+    setChatHistory((current) => current.slice(0, 1));
   }
 
   /* =========================================================
-     COPY MESSAGE
+     HELPERS
   ========================================================= */
 
-  async function copyMessage() {
-    try {
-      await navigator.clipboard.writeText(requestMessage);
-
-      setCopied(true);
-    } catch {
-      messageRef.current?.focus();
-      messageRef.current?.select();
-
-      setCopied(false);
-    }
-  }
-
-  /* =========================================================
-     GENERATE AI IMAGE
-  ========================================================= */
-
-  async function generateCinewall() {
-    if (!imageFile || busyRef.current) return;
-
-    busyRef.current = true;
-
-    setLoading(true);
-    setSeconds(0);
-    setError("");
-    setGeneratedImage("");
-    setShowOriginal(false);
-    setContactOpen(false);
-    setCopied(false);
-
-    popupShownRef.current = false;
-
-    if (popupTimerRef.current) {
-      clearTimeout(popupTimerRef.current);
-      popupTimerRef.current = null;
-    }
-
-    const message = [
+  function buildRequestMessage(nextDesign: DesignState) {
+    return [
       "Hallo Wallmade,",
       "",
       "Ik heb een Cinewall ontworpen met jullie AI-designer.",
       "Graag bespreek ik de mogelijkheden en ontvang ik een offerte.",
       "",
       "Mijn ontwerpvoorkeuren:",
-      `• Stijl: ${style}`,
-      `• TV-formaat: ${tvSize} inch`,
-      `• Elektrische haard: ${fireplace}`,
-      `• Aantal vakken / planken: ${shelves}`,
-      config.width && `• Breedte: ${config.width}`,
-      fireplace === "Ja" &&
-        config.fireplace &&
-        !/^(geen|nee)$/i.test(config.fireplace) &&
-        `• Haardmodel: ${config.fireplace}`,
-      config.cabinet && `• TV-meubel: ${config.cabinet}`,
-      config.wood && `• Hout / afwerking: ${config.wood}`,
-      config.type && `• Oorspronkelijk gekozen model: ${config.type}`,
+      `• Stijl: ${nextDesign.style}`,
+      `• TV-formaat: ${nextDesign.tvSize} inch`,
+      `• Elektrische haard: ${nextDesign.fireplace}`,
+      `• Aantal vakken: ${nextDesign.shelves}`,
+      nextDesign.cinewallWidth &&
+        `• Cinewall breedte: ${nextDesign.cinewallWidth}`,
+      `• Vakken positie: ${nextDesign.shelfPosition}`,
+      `• Vakken vorm: ${nextDesign.shelfShape}`,
+      `• Hout: ${nextDesign.woodEnabled}`,
+      nextDesign.woodEnabled === "Ja" &&
+        `• Houttype: ${nextDesign.woodType}`,
+      nextDesign.woodEnabled === "Ja" &&
+        `• Houtpositie: ${nextDesign.woodPosition}`,
+      `• Verlichting: ${nextDesign.lightingEnabled}`,
+      nextDesign.lightingEnabled === "Ja" &&
+        `• Lichtkleur: ${nextDesign.lightingColor}`,
+      `• TV-meubel: ${nextDesign.cabinetType}`,
+      `• Wandkleur: ${nextDesign.wallColor}`,
+      `• Afwerking: ${nextDesign.finishStyle}`,
       config.price &&
         `• Eerder getoonde prijsindicatie: ${config.price} (te bevestigen)`,
       "",
@@ -529,30 +711,97 @@ export default function AIDesigner() {
     ]
       .filter(Boolean)
       .join("\n");
+  }
+
+  async function generatedImageToFile() {
+    if (!generatedImage) return null;
+
+    const response = await fetch(generatedImage);
+    const blob = await response.blob();
+
+    return new File([blob], "wallmade-ai-current.png", {
+      type: blob.type || "image/png",
+    });
+  }
+
+  async function copyMessage() {
+    try {
+      await navigator.clipboard.writeText(requestMessage);
+      setCopied(true);
+    } catch {
+      messageRef.current?.focus();
+      messageRef.current?.select();
+      setCopied(false);
+    }
+  }
+
+  /* =========================================================
+     GENERATE IMAGE
+  ========================================================= */
+
+  async function generateWithDesign({
+    sourceFile,
+    nextDesign,
+    assistantEdit = false,
+    previousVersion,
+  }: {
+    sourceFile: File;
+    nextDesign: DesignState;
+    assistantEdit?: boolean;
+    previousVersion?: Version;
+  }) {
+    if (busyRef.current) return false;
+
+    busyRef.current = true;
+    autoContactRef.current = !assistantEdit;
+
+    if (!assistantEdit) {
+      setLoading(true);
+      setSeconds(0);
+    }
+
+    setError("");
+    setShowOriginal(false);
+    setContactOpen(false);
+    setCopied(false);
+
+    if (!assistantEdit) {
+      popupShownRef.current = false;
+    }
+
+    if (popupTimerRef.current) {
+      clearTimeout(popupTimerRef.current);
+      popupTimerRef.current = null;
+    }
 
     const formData = new FormData();
 
-    formData.append("image", imageFile);
+    formData.append("image", sourceFile);
 
-    const fields = {
-      style,
-      tvSize,
-      fireplace,
-      shelves,
+    const fields: Record<string, string> = {
+      ...nextDesign,
       cinewallType: config.type,
-      cinewallWidth: config.width,
-      fireplaceModel: fireplace === "Ja" ? config.fireplace : "Geen",
-      cabinet: config.cabinet,
-      wood: config.wood,
+      cinewallWidth: nextDesign.cinewallWidth || config.width,
+      fireplaceModel:
+        nextDesign.fireplace === "Ja"
+          ? nextDesign.fireplaceModel || config.fireplace
+          : "Geen",
+      cabinet:
+        nextDesign.cabinetType !== "None"
+          ? nextDesign.cabinetType
+          : config.cabinet,
+      wood:
+        nextDesign.woodEnabled === "Ja"
+          ? nextDesign.woodType || config.wood
+          : "Geen",
       price: config.price,
     };
 
     Object.entries(fields).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, value || "");
     });
 
     const controller = new AbortController();
-
     controllerRef.current = controller;
 
     const timeout = setTimeout(() => {
@@ -572,7 +821,8 @@ export default function AIDesigner() {
         throw new Error(
           response.status === 429
             ? "Het is momenteel druk. Probeer het over een paar minuten opnieuw."
-            : "Het ontwerp kon niet worden gemaakt. Probeer opnieuw."
+            : data?.error ||
+                "Het ontwerp kon niet worden gemaakt. Probeer opnieuw."
         );
       }
 
@@ -580,9 +830,18 @@ export default function AIDesigner() {
         throw new Error("Geen afbeelding ontvangen. Probeer opnieuw.");
       }
 
-      setRequestMessage(message);
+      if (previousVersion) {
+        setVersions((current) => [...current, previousVersion].slice(-8));
+      } else if (!assistantEdit) {
+        setVersions([]);
+      }
+
+      setDesign(nextDesign);
+      setRequestMessage(buildRequestMessage(nextDesign));
       setGeneratedImage(data.image);
       setEditing(false);
+
+      return true;
     } catch (err) {
       setError(
         controller.signal.aborted
@@ -591,20 +850,256 @@ export default function AIDesigner() {
             ? err.message
             : "Er ging iets mis. Probeer opnieuw."
       );
+
+      return false;
     } finally {
       clearTimeout(timeout);
-
       controllerRef.current = null;
-
       busyRef.current = false;
 
-      setLoading(false);
+      if (!assistantEdit) {
+        setLoading(false);
+      }
     }
   }
 
+  async function generateCinewall() {
+    if (!imageFile) return;
+
+    await generateWithDesign({
+      sourceFile: imageFile,
+      nextDesign: design,
+      assistantEdit: false,
+    });
+  }
+
   /* =========================================================
-     CONTACT LINKS
+     AI ASSISTANT
   ========================================================= */
+
+  function mergeAssistantDesign(
+    current: DesignState,
+    incoming: unknown
+  ): DesignState {
+    if (!incoming || typeof incoming !== "object") {
+      return current;
+    }
+
+    const next = { ...current };
+    const object = incoming as Record<string, unknown>;
+
+    (Object.keys(next) as Array<keyof DesignState>).forEach((key) => {
+      const value = object[key];
+
+      if (typeof value === "string" && value.trim()) {
+        next[key] = value.trim();
+      }
+    });
+
+    if (next.shelves === "0") {
+      next.lightingEnabled = "Nee";
+
+      if (next.woodPosition === "Inside shelves only") {
+        next.woodEnabled = "Nee";
+      }
+    }
+
+    return next;
+  }
+
+  async function sendAssistantMessage() {
+    const message = chatInput.trim();
+
+    if (!message || assistantLoading || loading || !generatedImage) return;
+
+    setAssistantError("");
+    setChatInput("");
+    setAssistantLoading(true);
+
+    requestAnimationFrame(() => {
+      chatInputRef.current?.focus({
+        preventScroll: true,
+      });
+    });
+
+    const userMessage: ChatMessage = {
+      id: `user-${Date.now()}`,
+      role: "user",
+      content: message,
+    };
+
+    setChatHistory((current) => [...current, userMessage]);
+
+    try {
+      const response = await fetch("/api/ai-assistant", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message,
+          language,
+          design,
+          history: chatHistory
+            .filter((item) => item.id !== "welcome")
+            .slice(-12)
+            .map((item) => ({
+              role: item.role,
+              content: item.content,
+            })),
+        }),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.success) {
+        throw new Error(
+          data?.error || "Wallmade AI kon het bericht niet verwerken."
+        );
+      }
+
+      const assistantReply: ChatMessage = {
+        id: `assistant-${Date.now()}`,
+        role: "assistant",
+        content: String(data.reply || "Begrepen."),
+      };
+
+      setChatHistory((current) => [...current, assistantReply]);
+
+      const nextDesign = mergeAssistantDesign(design, data.design);
+
+      setDesign(nextDesign);
+
+      if (
+        data.shouldRegenerate === true &&
+        data.needsClarification !== true
+      ) {
+        const sourceFile = await generatedImageToFile();
+
+        if (!sourceFile) {
+          throw new Error("Het huidige ontwerp kon niet worden gelezen.");
+        }
+
+        const previousVersion: Version = {
+          image: generatedImage,
+          design,
+        };
+
+        const success = await generateWithDesign({
+          sourceFile,
+          nextDesign,
+          assistantEdit: true,
+          previousVersion,
+        });
+
+        if (success) {
+          setChatHistory((current) => [
+            ...current,
+            {
+              id: `updated-${Date.now()}`,
+              role: "assistant",
+              content:
+                language === "ar"
+                  ? "تم تحديث التصميم على نفس الصورة ✓"
+                  : language === "tr"
+                    ? "Tasarım aynı görsel üzerinde güncellendi ✓"
+                    : language === "de"
+                      ? "Das Design wurde im selben Bild aktualisiert ✓"
+                      : language === "en"
+                        ? "The design has been updated on the same image ✓"
+                        : "Het ontwerp is op dezelfde afbeelding bijgewerkt ✓",
+            },
+          ]);
+        }
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Wallmade AI kon het bericht niet verwerken.";
+
+      setAssistantError(message);
+
+      setChatHistory((current) => [
+        ...current,
+        {
+          id: `assistant-error-${Date.now()}`,
+          role: "assistant",
+          content:
+            language === "ar"
+              ? "صار خطأ أثناء معالجة الطلب. جرّب مرة ثانية."
+              : "Er ging iets mis bij het verwerken van je verzoek. Probeer opnieuw.",
+        },
+      ]);
+    } finally {
+      setAssistantLoading(false);
+    }
+  }
+
+  function handleChatKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      void sendAssistantMessage();
+    }
+  }
+
+  function undoLastVersion() {
+    setVersions((current) => {
+      if (!current.length) return current;
+
+      const next = [...current];
+      const previous = next.pop();
+
+      if (previous) {
+        setGeneratedImage(previous.image);
+        setDesign(previous.design);
+        setRequestMessage(buildRequestMessage(previous.design));
+        setShowOriginal(false);
+
+        setChatHistory((history) => [
+          ...history,
+          {
+            id: `undo-${Date.now()}`,
+            role: "assistant",
+            content:
+              language === "ar"
+                ? "رجعت للتصميم السابق ✓"
+                : language === "tr"
+                  ? "Önceki tasarıma geri dönüldü ✓"
+                  : language === "de"
+                    ? "Zum vorherigen Design zurückgekehrt ✓"
+                    : language === "en"
+                      ? "Returned to the previous design ✓"
+                      : "Terug naar het vorige ontwerp ✓",
+          },
+        ]);
+      }
+
+      return next;
+    });
+  }
+
+  /* =========================================================
+     OPTIONS
+  ========================================================= */
+
+  const styleOptions = ["Modern", "Luxury", "Minimal"];
+  const tvSizes = ["55", "65", "75", "85", "98"];
+  const shelfOptions = ["0", "2", "4", "6"];
+
+  const summaryChips = useMemo(
+    () => [
+      design.style,
+      `${design.tvSize}" TV`,
+      design.fireplace === "Ja" ? "Met sfeerhaard" : "Zonder sfeerhaard",
+      design.shelves === "0" ? "Geen vakken" : `${design.shelves} vakken`,
+      design.woodEnabled === "Ja" ? design.woodType : "Geen hout",
+      design.lightingEnabled === "Ja"
+        ? `${design.lightingColor} LED`
+        : "Geen LED",
+    ],
+    [design]
+  );
 
   const whatsappUrl =
     `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(requestMessage)}`;
@@ -615,61 +1110,26 @@ export default function AIDesigner() {
     )}` + `&body=${encodeURIComponent(requestMessage)}`;
 
   /* =========================================================
-     STYLE OPTIONS
-  ========================================================= */
-
-  const styleOptions = [
-    {
-      value: "Modern",
-      title: "Modern",
-      subtitle: "Strak & tijdloos",
-      icon: <IconModern />,
-    },
-
-    {
-      value: "Luxury",
-      title: "Luxury",
-      subtitle: "Warm & exclusief",
-      icon: <IconLuxury />,
-    },
-
-    {
-      value: "Minimal",
-      title: "Minimal",
-      subtitle: "Rustig & verfijnd",
-      icon: <IconMinimal />,
-    },
-  ];
-
-  const tvSizes = ["55", "65", "75", "85", "98"];
-  const shelfOptions = ["0", "2", "4", "6"];
-
-  /* =========================================================
-     PAGE
+     RENDER
   ========================================================= */
 
   return (
     <main
       lang="nl"
       dir="ltr"
-      className="min-h-screen overflow-x-hidden bg-[#08090a] text-[#f4f1eb]"
+      className="min-h-[100dvh] overflow-x-hidden overscroll-none bg-[#08090a] text-[#f4f1eb]"
     >
-      {/* BACKGROUND */}
-
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute left-1/2 top-[-260px] h-[540px] w-[760px] -translate-x-1/2 rounded-full bg-[#b99154]/[0.055] blur-[140px]" />
-
         <div className="absolute bottom-[-220px] right-[-200px] h-[500px] w-[500px] rounded-full bg-[#765a34]/[0.04] blur-[130px]" />
       </div>
 
-      {/* =====================================================
-          NAVBAR
-      ===================================================== */}
+      {/* NAVBAR */}
 
       <nav className="relative z-20 border-b border-white/[0.06] bg-[#08090a]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[74px] max-w-7xl items-center justify-between px-5 md:px-8">
           <a href="/" className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#9b7d4c]/45 bg-[#18140e] text-sm font-bold text-[#d4b477] shadow-[0_10px_30px_rgba(0,0,0,.3)]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#9b7d4c]/45 bg-[#18140e] text-sm font-bold text-[#d4b477]">
               W
             </div>
 
@@ -682,160 +1142,381 @@ export default function AIDesigner() {
               </div>
 
               <div className="mt-1 text-[8px] uppercase tracking-[0.28em] text-neutral-600">
-                Interior Studio
+                AI Interior Studio
               </div>
             </div>
           </a>
 
           <a
             href="/"
-            className="flex shrink-0 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-4 py-2.5 text-xs text-neutral-300 transition hover:border-white/20 hover:bg-white/[0.05]"
+            className="flex shrink-0 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-4 py-2.5 text-xs text-neutral-300"
           >
-            <span>←</span>
-            Terug
+            ← Terug
           </a>
         </div>
       </nav>
 
       {/* =====================================================
-          RESULT
+          RESULT + ASSISTANT
       ===================================================== */}
 
       {resultVisible ? (
         <section
           ref={resultRef}
-          className="relative z-10 mx-auto max-w-7xl px-4 py-7 sm:px-5 md:px-8 md:py-10"
+          className="relative z-10 mx-auto max-w-7xl px-4 py-5 sm:px-5 md:px-8 md:py-10"
         >
-          <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#a18554]/25 bg-[#a18554]/[0.06] px-3.5 py-2">
+              <div className="mb-4 hidden items-center gap-2 rounded-full border border-[#a18554]/25 bg-[#a18554]/[0.06] px-3.5 py-2 sm:inline-flex">
                 <IconSparkles className="h-3.5 w-3.5 text-[#d4b477]" />
-
                 <span className="text-[9px] font-medium uppercase tracking-[0.23em] text-[#c6a66c]">
-                  Jouw AI ontwerp
+                  Jouw Wallmade AI ontwerp
                 </span>
               </div>
 
-              <h1 className="max-w-3xl text-3xl font-medium leading-[1.08] tracking-[-0.035em] sm:text-4xl md:text-5xl">
-                Dit kan jouw nieuwe{" "}
-                <span className="text-[#d4b477]">Cinewall</span> worden.
+              <h1 className="max-w-3xl text-[28px] font-medium leading-[1.05] tracking-[-0.035em] sm:text-4xl md:text-5xl">
+                Ontwerp. Praat.{" "}
+                <span className="text-[#d4b477]">Pas direct aan.</span>
               </h1>
 
-              <p className="mt-3 max-w-xl text-sm leading-6 text-neutral-500">
-                Bekijk jouw originele ruimte en vergelijk deze direct met het
-                nieuwe AI-ontwerp.
+              <p className="mt-3 hidden max-w-2xl text-sm leading-6 text-neutral-500 sm:block">
+                Je ontwerp is klaar. Gebruik de AI Designer hieronder om
+                wijzigingen aan dezelfde afbeelding te vragen.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {versions.length > 0 && (
+                <button
+                  type="button"
+                  disabled={loading || assistantLoading}
+                  onClick={undoLastVersion}
+                  className="flex items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-[11px] text-neutral-300 sm:px-4 sm:py-3 sm:text-xs"
+                >
+                  <IconUndo className="h-4 w-4" />
+                  Vorige versie
+                </button>
+              )}
+
+              <button
+                type="button"
+                disabled={loading || assistantLoading}
+                onClick={() => setEditing(true)}
+                className="flex items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-[11px] text-neutral-300 sm:px-4 sm:py-3 sm:text-xs"
+              >
+                <IconSliders className="h-4 w-4" />
+                Alle opties
+              </button>
+            </div>
+          </div>
+
+          <div className="grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
+            {/* IMAGE */}
+
+            <div className="overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#101113]">
+              <div className="relative flex min-h-[300px] items-center justify-center bg-[#050606] sm:min-h-[360px] md:min-h-[620px]">
+                <img
+                  key={showOriginal ? image : generatedImage}
+                  src={showOriginal ? image : generatedImage}
+                  alt={
+                    showOriginal
+                      ? "Jouw huidige woonkamer"
+                      : "Wallmade AI Cinewall ontwerp"
+                  }
+                  onLoad={showOriginal ? undefined : onResultLoaded}
+                  onError={() =>
+                    setError("De afbeelding kon niet worden geladen.")
+                  }
+                  className="max-h-[72vh] w-full object-contain"
+                />
+
+                {loading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/65 backdrop-blur-sm">
+                    <div className="max-w-xs text-center">
+                      <span className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-[#d4b477] border-t-transparent" />
+                      <p className="mt-4 text-sm font-medium text-white">
+                        Wallmade AI werkt aan je ontwerp...
+                      </p>
+                      {loading && (
+                        <p className="mt-2 text-xs text-neutral-500">
+                          {seconds}s
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              </div>
+
+              <div className="border-t border-white/[0.06] px-4 pt-3 sm:px-5 sm:pt-4">
+                <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/[0.08] bg-black/35 p-1">
+                  <button
+                    type="button"
+                    aria-pressed={showOriginal}
+                    onClick={() => setShowOriginal(true)}
+                    className={`rounded-lg px-4 py-2.5 text-[11px] font-medium transition sm:text-xs ${
+                      showOriginal
+                        ? "bg-[#efebe2] text-[#111]"
+                        : "text-neutral-500"
+                    }`}
+                  >
+                    Origineel
+                  </button>
+
+                  <button
+                    type="button"
+                    aria-pressed={!showOriginal}
+                    onClick={() => setShowOriginal(false)}
+                    className={`rounded-lg px-4 py-2.5 text-[11px] font-medium transition sm:text-xs ${
+                      !showOriginal
+                        ? "bg-[#d4b477] text-[#15110c]"
+                        : "text-neutral-500"
+                    }`}
+                  >
+                    AI ontwerp
+                  </button>
+                </div>
+              </div>
+
+              <div className="px-4 py-3 sm:p-5">
+                <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:flex-wrap sm:overflow-visible">
+                  {summaryChips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="shrink-0 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[10px] text-neutral-400"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* MOBILE AI TRIGGER */}
+
+            <button
+              type="button"
+              onClick={() => setMobileChatOpen((value) => !value)}
+              className="flex w-full items-center justify-between gap-4 rounded-2xl border border-[#957646]/20 bg-[#0e0f11] p-4 text-left xl:hidden"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#957646]/35 bg-[#17130d] text-[#d4b477]">
+                  <IconMagic className="h-4 w-4" />
+                </span>
+
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">
+                    {mobileChatOpen ? "Sluit AI Designer" : "Pas ontwerp aan met AI"}
+                  </p>
+                  <p className="mt-1 truncate text-[10px] text-neutral-600">
+                    Typ gewoon wat je wilt veranderen
+                  </p>
+                </div>
+              </div>
+
+              <span
+                className={`text-xl text-[#d4b477] transition ${
+                  mobileChatOpen ? "rotate-45" : ""
+                }`}
+              >
+                +
+              </span>
+            </button>
+
+            {/* MOBILE CHAT BACKDROP */}
+
+            {mobileChatOpen && (
+              <button
+                type="button"
+                aria-label="Sluit AI Designer"
+                onClick={() => setMobileChatOpen(false)}
+                className="fixed inset-0 z-40 bg-black/70 backdrop-blur-[2px] xl:hidden"
+              />
+            )}
+
+            {/* CHAT */}
+
+            <div
+              className={`${
+                mobileChatOpen ? "flex" : "hidden"
+              } fixed inset-x-3 bottom-[max(12px,env(safe-area-inset-bottom))] z-50 h-[min(72vh,620px)] max-h-[calc(100dvh-24px)] min-h-[430px] flex-col overflow-hidden rounded-[24px] border border-[#957646]/30 bg-[#0e0f11] shadow-[0_-24px_80px_rgba(0,0,0,.55)] xl:static xl:flex xl:h-auto xl:max-h-none xl:min-h-0 xl:rounded-[28px] xl:shadow-none`}
+            >
+              <div className="border-b border-white/[0.06] p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#957646]/35 bg-[#17130d] text-[#d4b477]">
+                      <IconMagic className="h-5 w-5" />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold">
+                        Wallmade AI Designer
+                      </p>
+                      <p className="mt-1 flex items-center gap-2 text-[10px] text-neutral-600">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        Online
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Sluit AI Designer"
+                      onClick={() => setMobileChatOpen(false)}
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.025] text-lg text-[#d4b477] xl:hidden"
+                    >
+                      ×
+                    </button>
+
+                    <select
+                    value={language}
+                    onChange={(event) =>
+                      setLanguage(event.target.value as Language)
+                    }
+                    className="max-w-[135px] rounded-xl border border-white/[0.07] bg-[#111214] px-2.5 py-2 text-[10px] text-neutral-400 outline-none"
+                    aria-label="Chat language"
+                  >
+                    {(
+                      ["auto", "nl", "en", "ar", "tr", "de"] as Language[]
+                    ).map((value) => (
+                      <option key={value} value={value}>
+                        {languageLabel(value)}
+                      </option>
+                    ))}
+                  </select>
+                  </div>
+                </div>
+
+                <p className="mt-4 hidden text-[11px] leading-5 text-neutral-600 sm:block xl:block">
+                  Vraag wijzigingen in je eigen taal. Ik pas je ontwerpinstellingen
+                  aan en maak, wanneer nodig, een nieuwe versie van dezelfde ruimte.
+                </p>
+              </div>
+
+              <div className="max-h-[45dvh] flex-1 space-y-3 overflow-y-auto p-4 xl:max-h-[500px]">
+                {chatHistory.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${
+                      message.role === "user"
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div
+                      dir="auto"
+                      className={`max-w-[88%] rounded-2xl px-4 py-3 text-[12px] leading-5 ${
+                        message.role === "user"
+                          ? "rounded-br-md bg-[#d4b477] text-[#17130d]"
+                          : "rounded-bl-md border border-white/[0.06] bg-white/[0.035] text-neutral-300"
+                      }`}
+                    >
+                      {message.content}
+                    </div>
+                  </div>
+                ))}
+
+                {assistantLoading && (
+                  <div className="flex justify-start">
+                    <div className="flex items-center gap-2.5 rounded-2xl rounded-bl-md border border-white/[0.06] bg-white/[0.035] px-4 py-3">
+                      <span className="flex gap-1">
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#d4b477]" />
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#d4b477] [animation-delay:150ms]" />
+                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#d4b477] [animation-delay:300ms]" />
+                      </span>
+                      <span className="text-[10px] text-neutral-500">
+                        Wallmade AI past je ontwerp aan...
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <div ref={chatEndRef} />
+              </div>
+
+              {assistantError && (
+                <p className="mx-4 mb-2 rounded-xl border border-red-400/15 bg-red-400/[0.06] px-3 py-2 text-[10px] text-red-200">
+                  {assistantError}
+                </p>
+              )}
+
+              <div className="border-t border-white/[0.06] p-4">
+                <div className="mb-3 hidden flex-wrap gap-2 sm:flex">
+                  {[
+                    "Hout in de vakken",
+                    "Warmere LED",
+                    "Haard breder",
+                    "6 vakken",
+                  ].map((example) => (
+                    <button
+                      key={example}
+                      type="button"
+                      disabled={assistantLoading || loading}
+                      onClick={() => setChatInput(example)}
+                      className="rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-[9px] text-neutral-600 transition hover:text-neutral-300"
+                    >
+                      {example}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex items-end gap-2 rounded-2xl border border-white/[0.08] bg-[#08090a] p-2">
+                  <textarea
+                    ref={chatInputRef}
+                    value={chatInput}
+                    onChange={(event) => setChatInput(event.target.value)}
+                    onKeyDown={handleChatKeyDown}
+                    dir="auto"
+                    rows={2}
+                    maxLength={2000}
+                    disabled={loading}
+                    aria-busy={assistantLoading}
+                    placeholder="Bijv. Voeg walnoothout toe in de vakken en maak het licht warmer..."
+                    className="min-h-[52px] flex-1 resize-none bg-transparent px-2 py-2 text-[12px] leading-5 text-white outline-none placeholder:text-neutral-700"
+                  />
+
+                  <button
+                    type="button"
+                    aria-label="Bericht versturen"
+                    disabled={
+                      !chatInput.trim() || assistantLoading || loading
+                    }
+                    onClick={() => void sendAssistantMessage()}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#d4b477] text-[#17130d] disabled:bg-[#242528] disabled:text-neutral-700"
+                  >
+                    <IconSend className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <p className="mt-2 text-center text-[9px] text-neutral-700">
+                  Nederlands · English · العربية · Türkçe · Deutsch
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-3 rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 sm:mt-5 sm:gap-4 sm:bg-transparent sm:p-0 md:grid-cols-[1fr_auto] md:items-center md:border-0">
+            <div>
+              <h2 className="text-base font-medium sm:text-xl">
+                Klaar om dit echt te laten bouwen?
+              </h2>
+              <p className="mt-2 text-xs leading-5 text-neutral-600">
+                Wij controleren maten, materialen en technische uitvoerbaarheid
+                voordat we een definitieve offerte maken.
               </p>
             </div>
 
             <button
+              ref={contactButtonRef}
               type="button"
-              disabled={loading}
-              onClick={() => setEditing(true)}
-              className="shrink-0 rounded-xl border border-white/[0.09] bg-white/[0.025] px-5 py-3 text-sm text-neutral-300 transition hover:bg-white/[0.05]"
+              onClick={openContact}
+              className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#d4b477] px-5 py-3.5 text-sm font-semibold text-[#17130d] sm:rounded-2xl sm:px-7 sm:py-4 md:w-auto"
             >
-              Ontwerp aanpassen
+              Vraag mijn offerte aan
+              <IconArrow className="h-4 w-4" />
             </button>
           </div>
-
-          <div className="overflow-hidden rounded-[28px] border border-white/[0.08] bg-[#101113]">
-            <div className="relative flex min-h-[360px] items-center justify-center bg-[#050606] md:min-h-[620px]">
-              <img
-                key={showOriginal ? image : generatedImage}
-                src={showOriginal ? image : generatedImage}
-                alt={
-                  showOriginal
-                    ? "Jouw huidige woonkamer"
-                    : "Wallmade AI Cinewall ontwerp"
-                }
-                onLoad={showOriginal ? undefined : onResultLoaded}
-                onError={() =>
-                  setError("De afbeelding kon niet worden geladen.")
-                }
-                className="max-h-[72vh] w-full object-contain"
-              />
-
-              <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1 rounded-full border border-white/[0.1] bg-black/75 p-1.5 shadow-2xl backdrop-blur-xl">
-                <button
-                  type="button"
-                  aria-pressed={showOriginal}
-                  onClick={() => setShowOriginal(true)}
-                  className={`min-w-[82px] rounded-full px-5 py-2.5 text-xs font-medium transition ${
-                    showOriginal
-                      ? "bg-[#efebe2] text-[#111]"
-                      : "text-neutral-400"
-                  }`}
-                >
-                  Voor
-                </button>
-
-                <button
-                  type="button"
-                  aria-pressed={!showOriginal}
-                  onClick={() => setShowOriginal(false)}
-                  className={`min-w-[92px] rounded-full px-5 py-2.5 text-xs font-medium transition ${
-                    !showOriginal
-                      ? "bg-[#d4b477] text-[#15110c]"
-                      : "text-neutral-400"
-                  }`}
-                >
-                  AI ontwerp
-                </button>
-              </div>
-            </div>
-
-            <div className="border-t border-white/[0.06] p-5 md:p-7">
-              <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-                <div>
-                  <div className="mb-5 flex flex-wrap gap-2">
-                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[10px] text-neutral-400">
-                      {style}
-                    </span>
-
-                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[10px] text-neutral-400">
-                      {tvSize}&quot; TV
-                    </span>
-
-                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[10px] text-neutral-400">
-                      {fireplace === "Ja"
-                        ? "Met sfeerhaard"
-                        : "Zonder sfeerhaard"}
-                    </span>
-
-                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[10px] text-neutral-400">
-                      {shelves === "0"
-                        ? "Geen vakken"
-                        : `${shelves} vakken`}
-                    </span>
-                  </div>
-
-                  <h2 className="text-2xl font-medium tracking-tight">
-                    Van visualisatie naar maatwerk.
-                  </h2>
-
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-neutral-500">
-                    Wij vertalen jouw AI-ontwerp naar een technisch uitvoerbaar
-                    ontwerp dat past bij jouw ruimte.
-                  </p>
-                </div>
-
-                <button
-                  ref={contactButtonRef}
-                  type="button"
-                  onClick={openContact}
-                  className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-[#d4b477] px-7 py-4 text-sm font-semibold text-[#17130d] transition hover:bg-[#e0c48e] lg:w-auto"
-                >
-                  Vraag mijn offerte aan
-
-                  <IconArrow className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <p className="mt-4 text-center text-[10px] leading-5 text-neutral-700">
-            AI-impressie. Materialen, maten en uitvoerbaarheid worden
-            definitief afgestemd door Wallmade.
-          </p>
         </section>
       ) : (
         /* =====================================================
@@ -843,15 +1524,12 @@ export default function AIDesigner() {
         ===================================================== */
 
         <section className="relative z-10 mx-auto max-w-7xl px-4 py-8 sm:px-5 md:px-8 md:py-12">
-          {/* ===================================================
-              HERO
-          =================================================== */}
+          {/* HERO */}
 
           <div className="mb-8 grid gap-7 lg:grid-cols-[1.08fr_0.92fr] lg:items-end">
             <div>
-              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#987a48]/35 bg-[#18140e] px-4 py-2.5 shadow-[0_14px_40px_rgba(0,0,0,.2)]">
+              <div className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#987a48]/35 bg-[#18140e] px-4 py-2.5">
                 <IconSparkles className="h-3.5 w-3.5 text-[#d4b477]" />
-
                 <span className="text-[9px] font-medium uppercase tracking-[0.25em] text-[#caaa70]">
                   Wallmade AI Design Studio
                 </span>
@@ -859,61 +1537,37 @@ export default function AIDesigner() {
 
               <h1 className="max-w-4xl text-[39px] font-medium leading-[1.03] tracking-[-0.045em] sm:text-5xl md:text-6xl">
                 Zie jouw nieuwe wand
-                <br className="hidden sm:block" />
-                <span className="text-[#d4b477]">
-                  {" "}
+                <span className="block text-[#d4b477]">
                   voordat hij bestaat.
                 </span>
               </h1>
 
               <p className="mt-5 max-w-xl text-sm leading-7 text-neutral-500 md:text-[15px]">
-                Upload een foto van jouw woonkamer. Kies jouw voorkeuren en laat
-                Wallmade AI jouw nieuwe Cinewall visualiseren.
+                Upload je woonkamer, stel je Cinewall samen en verfijn daarna
+                elk detail met Wallmade AI.
               </p>
             </div>
 
-            {/* STEPS */}
-
             <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0e0f10]">
-              <div className="border-r border-white/[0.06] p-4 sm:p-5">
-                <StepBadge>01</StepBadge>
-
-                <p className="mt-4 text-xs font-medium text-neutral-300">
-                  Upload
-                </p>
-
-                <p className="mt-1 hidden text-[9px] text-neutral-600 sm:block">
-                  jouw ruimte
-                </p>
-              </div>
-
-              <div className="border-r border-white/[0.06] p-4 sm:p-5">
-                <StepBadge>02</StepBadge>
-
-                <p className="mt-4 text-xs font-medium text-neutral-300">
-                  Personaliseer
-                </p>
-
-                <p className="mt-1 hidden text-[9px] text-neutral-600 sm:block">
-                  jouw stijl
-                </p>
-              </div>
-
-              <div className="p-4 sm:p-5">
-                <StepBadge
-                  icon={
-                    <IconSparkles className="h-4 w-4 text-[#d4b477]" />
-                  }
-                />
-
-                <p className="mt-4 text-xs font-medium text-neutral-300">
-                  Visualiseer
-                </p>
-
-                <p className="mt-1 hidden text-[9px] text-neutral-600 sm:block">
-                  met AI
-                </p>
-              </div>
+              {[
+                ["01", "Upload"],
+                ["02", "Ontwerp"],
+                ["✦", "Verfijn met AI"],
+              ].map(([number, title], index) => (
+                <div
+                  key={title}
+                  className={`p-4 sm:p-5 ${
+                    index < 2 ? "border-r border-white/[0.06]" : ""
+                  }`}
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#8e7548] bg-[#17130d] text-[11px] font-semibold text-[#d7b97d]">
+                    {number}
+                  </div>
+                  <p className="mt-4 text-[11px] font-medium text-neutral-300">
+                    {title}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -925,36 +1579,21 @@ export default function AIDesigner() {
                 onClick={() => setEditing(false)}
                 className="text-xs font-medium text-[#d4b477] underline decoration-[#d4b477]/40 underline-offset-4"
               >
-                Terug naar mijn vorige ontwerp
+                Terug naar mijn AI ontwerp
               </button>
             </div>
           )}
 
-          {/* ===================================================
-              MAIN STUDIO
-          =================================================== */}
-
           <div className="grid overflow-hidden rounded-[30px] border border-white/[0.07] bg-[#0e0f11] shadow-[0_30px_80px_rgba(0,0,0,.3)] lg:grid-cols-[1.05fr_0.95fr]">
-            {/* =================================================
-                PHOTO
-            ================================================= */}
+            {/* PHOTO */}
 
             <div className="p-4 sm:p-5 md:p-7 lg:p-8">
-              <div className="mb-5">
-                <div className="flex items-center gap-3">
-                  <span className="h-px w-7 bg-[#8c7045]" />
+              <SectionTitle
+                eyebrow="01 / Jouw ruimte"
+                title="Begin met een foto."
+              />
 
-                  <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-[#c4a166]">
-                    01 / Jouw ruimte
-                  </p>
-                </div>
-
-                <h2 className="mt-4 text-2xl font-medium tracking-tight">
-                  Begin met een foto.
-                </h2>
-              </div>
-
-              <label className="group relative flex min-h-[300px] cursor-pointer items-center justify-center overflow-hidden rounded-[25px] border border-dashed border-white/[0.12] bg-[#070808] transition hover:border-[#a18554]/50 md:min-h-[500px]">
+              <label className="group relative mt-5 flex min-h-[300px] cursor-pointer items-center justify-center overflow-hidden rounded-[25px] border border-dashed border-white/[0.12] bg-[#070808] transition hover:border-[#a18554]/50 md:min-h-[500px]">
                 {image ? (
                   <>
                     <img
@@ -968,14 +1607,14 @@ export default function AIDesigner() {
                         Jouw huidige ruimte
                       </span>
 
-                      <span className="rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-[9px] text-neutral-300 backdrop-blur">
+                      <span className="rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-[9px] text-neutral-300">
                         Foto wijzigen
                       </span>
                     </div>
                   </>
                 ) : (
                   <div className="max-w-sm px-7 py-10 text-center">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#9a7b49]/45 bg-[#17130d] text-[#d4b477] shadow-[0_16px_40px_rgba(0,0,0,.3)] transition duration-300 group-hover:scale-105">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-[#9a7b49]/45 bg-[#17130d] text-[#d4b477]">
                       <IconUpload className="h-6 w-6" />
                     </div>
 
@@ -990,9 +1629,7 @@ export default function AIDesigner() {
 
                     <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/[0.05] bg-white/[0.025] px-3 py-2 text-[9px] text-neutral-600">
                       JPG, PNG of WebP
-
-                      <span className="text-neutral-800">•</span>
-
+                      <span>•</span>
                       Max. 10 MB
                     </div>
                   </div>
@@ -1004,7 +1641,7 @@ export default function AIDesigner() {
                   aria-label="Kies een foto van jouw woonkamer"
                   disabled={loading}
                   onChange={handleImage}
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-wait"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 />
               </label>
 
@@ -1015,137 +1652,67 @@ export default function AIDesigner() {
 
                 <p className="text-[10px] leading-5 text-neutral-600">
                   <span className="font-medium text-neutral-400">
-                    Voor het beste resultaat:
+                    Beste resultaat:
                   </span>{" "}
-                  fotografeer de wand recht van voren en zorg voor voldoende
-                  licht.
+                  fotografeer de wand recht van voren, zonder mensen en met
+                  voldoende licht.
                 </p>
               </div>
             </div>
 
-            {/* =================================================
-                OPTIONS
-            ================================================= */}
+            {/* OPTIONS */}
 
             <div className="border-t border-white/[0.06] p-4 sm:p-5 md:p-7 lg:border-l lg:border-t-0 lg:p-8">
-              <div className="mb-7">
-                <div className="flex items-center gap-3">
-                  <span className="h-px w-7 bg-[#8c7045]" />
-
-                  <p className="text-[10px] font-medium uppercase tracking-[0.25em] text-[#c4a166]">
-                    02 / Jouw ontwerp
-                  </p>
-                </div>
-
-                <h2 className="mt-4 text-2xl font-medium tracking-tight">
-                  Maak het helemaal van jou.
-                </h2>
-
-                <p className="mt-2 text-xs leading-5 text-neutral-600">
-                  Kies jouw voorkeuren. Wallmade AI gebruikt ze om een
-                  persoonlijk ontwerp te creëren.
-                </p>
-              </div>
+              <SectionTitle
+                eyebrow="02 / Jouw ontwerp"
+                title="Maak het helemaal van jou."
+                text="Begin eenvoudig. Open daarna de geavanceerde opties als je elk detail wilt bepalen."
+              />
 
               <fieldset
                 disabled={loading}
-                className="space-y-7 disabled:opacity-50"
+                className="mt-7 space-y-7 disabled:opacity-50"
               >
-                {/* =============================================
-                    STYLE
-                ============================================= */}
+                {/* STYLE */}
 
                 <div>
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="text-sm font-medium">Interieurstijl</p>
-
-                    <span className="text-[9px] text-neutral-700">
-                      Kies één
-                    </span>
-                  </div>
+                  <p className="mb-3 text-sm font-medium">Interieurstijl</p>
 
                   <div className="grid grid-cols-3 gap-2">
-                    {styleOptions.map((item) => {
-                      const active = style === item.value;
-
-                      return (
-                        <button
-                          key={item.value}
-                          type="button"
-                          aria-pressed={active}
-                          onClick={() => setStyle(item.value)}
-                          className={`relative min-w-0 rounded-2xl border px-3 py-4 text-left transition-all duration-300 ${
-                            active
-                              ? "border-[#947848] bg-[linear-gradient(180deg,#211b12,#15130f)] shadow-[0_15px_35px_rgba(0,0,0,.25)]"
-                              : "border-white/[0.06] bg-[#131416] hover:border-white/[0.12]"
-                          }`}
-                        >
-                          <div className="flex items-start justify-between gap-1">
-                            <span
-                              className={`flex h-9 w-9 items-center justify-center rounded-xl border ${
-                                active
-                                  ? "border-[#9b7c49]/40 bg-[#d4b477]/10 text-[#d4b477]"
-                                  : "border-white/[0.05] bg-white/[0.025] text-neutral-600"
-                              }`}
-                            >
-                              {item.icon}
-                            </span>
-
-                            <SelectedMark active={active} />
-                          </div>
-
-                          <p className="mt-4 truncate text-xs font-semibold text-neutral-200">
-                            {item.title}
-                          </p>
-
-                          <p className="mt-1 hidden truncate text-[8px] text-neutral-700 sm:block">
-                            {item.subtitle}
-                          </p>
-                        </button>
-                      );
-                    })}
+                    {styleOptions.map((value) => (
+                      <ToggleChoice
+                        key={value}
+                        label={value}
+                        active={design.style === value}
+                        onClick={() => updateDesign("style", value)}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                {/* =============================================
-                    TV
-                ============================================= */}
+                {/* TV */}
 
                 <div>
                   <div className="mb-3 flex items-center justify-between">
                     <p className="text-sm font-medium">TV-formaat</p>
-
                     <span className="text-xs font-semibold text-[#d4b477]">
-                      {tvSize}&quot;
+                      {design.tvSize}&quot;
                     </span>
                   </div>
 
                   <div className="grid grid-cols-5 gap-2">
-                    {tvSizes.map((size) => {
-                      const active = tvSize === size;
-
-                      return (
-                        <button
-                          key={size}
-                          type="button"
-                          aria-pressed={active}
-                          onClick={() => setTvSize(size)}
-                          className={`flex h-14 items-center justify-center rounded-xl border text-sm font-medium transition-all ${
-                            active
-                              ? "border-[#927647] bg-[#211b13] text-[#dfc186] shadow-[0_10px_25px_rgba(0,0,0,.25)]"
-                              : "border-white/[0.05] bg-[#131416] text-neutral-600 hover:border-white/[0.12] hover:text-neutral-400"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      );
-                    })}
+                    {tvSizes.map((value) => (
+                      <ToggleChoice
+                        key={value}
+                        label={value}
+                        active={design.tvSize === value}
+                        onClick={() => updateDesign("tvSize", value)}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                {/* =============================================
-                    FIREPLACE
-                ============================================= */}
+                {/* FIREPLACE */}
 
                 <div>
                   <p className="mb-3 text-sm font-medium">
@@ -1153,255 +1720,643 @@ export default function AIDesigner() {
                   </p>
 
                   <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      aria-pressed={fireplace === "Ja"}
-                      onClick={() => setFireplace("Ja")}
-                      className={`relative rounded-2xl border p-4 text-left transition-all duration-300 ${
-                        fireplace === "Ja"
-                          ? "border-[#927647] bg-[linear-gradient(180deg,#211b12,#15130f)]"
-                          : "border-white/[0.06] bg-[#131416]"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <span
-                          className={`flex h-10 w-10 items-center justify-center rounded-xl border ${
-                            fireplace === "Ja"
-                              ? "border-[#9d7c49]/40 bg-[#d4b477]/10 text-[#d4b477]"
-                              : "border-white/[0.06] text-neutral-600"
-                          }`}
-                        >
-                          <IconFireplace />
-                        </span>
+                    <ToggleChoice
+                      label="Met haard"
+                      active={design.fireplace === "Ja"}
+                      onClick={() => updateDesign("fireplace", "Ja")}
+                    />
 
-                        <SelectedMark active={fireplace === "Ja"} />
-                      </div>
-
-                      <p className="mt-4 text-xs font-medium text-neutral-200">
-                        Met sfeerhaard
-                      </p>
-
-                      <p className="mt-1 hidden text-[9px] leading-4 text-neutral-700 sm:block">
-                        Warm en sfeervol
-                      </p>
-                    </button>
-
-                    <button
-                      type="button"
-                      aria-pressed={fireplace === "Nee"}
-                      onClick={() => setFireplace("Nee")}
-                      className={`relative rounded-2xl border p-4 text-left transition-all duration-300 ${
-                        fireplace === "Nee"
-                          ? "border-[#927647] bg-[linear-gradient(180deg,#211b12,#15130f)]"
-                          : "border-white/[0.06] bg-[#131416]"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <span
-                          className={`flex h-10 w-10 items-center justify-center rounded-xl border ${
-                            fireplace === "Nee"
-                              ? "border-[#9d7c49]/40 bg-[#d4b477]/10 text-[#d4b477]"
-                              : "border-white/[0.06] text-neutral-600"
-                          }`}
-                        >
-                          <IconWall />
-                        </span>
-
-                        <SelectedMark active={fireplace === "Nee"} />
-                      </div>
-
-                      <p className="mt-4 text-xs font-medium text-neutral-200">
-                        Zonder sfeerhaard
-                      </p>
-
-                      <p className="mt-1 hidden text-[9px] leading-4 text-neutral-700 sm:block">
-                        Strak en minimalistisch
-                      </p>
-                    </button>
+                    <ToggleChoice
+                      label="Zonder haard"
+                      active={design.fireplace === "Nee"}
+                      onClick={() => updateDesign("fireplace", "Nee")}
+                    />
                   </div>
                 </div>
 
-                {/* =============================================
-                    SHELVES
-                ============================================= */}
+                {/* SHELVES */}
 
                 <div>
                   <div className="mb-3 flex items-center justify-between">
-                    <p className="text-sm font-medium">
-                      Decoratieve vakken
-                    </p>
-
+                    <p className="text-sm font-medium">Decoratieve vakken</p>
                     <span className="text-[9px] text-neutral-700">
-                      LED inbegrepen
+                      {design.shelves} gekozen
                     </span>
                   </div>
 
                   <div className="grid grid-cols-4 gap-2">
-                    {shelfOptions.map((value) => {
-                      const active = shelves === value;
-
-                      return (
-                        <button
-                          key={value}
-                          type="button"
-                          aria-pressed={active}
-                          onClick={() => setShelves(value)}
-                          className={`flex h-14 items-center justify-center rounded-xl border text-sm font-medium transition-all ${
-                            active
-                              ? "border-[#927647] bg-[#211b13] text-[#dfc186] shadow-[0_10px_25px_rgba(0,0,0,.25)]"
-                              : "border-white/[0.05] bg-[#131416] text-neutral-600 hover:border-white/[0.12]"
-                          }`}
-                        >
-                          {value === "0" ? "Geen" : value}
-                        </button>
-                      );
-                    })}
+                    {shelfOptions.map((value) => (
+                      <ToggleChoice
+                        key={value}
+                        label={value === "0" ? "Geen" : value}
+                        active={design.shelves === value}
+                        onClick={() => {
+                          setDesign((current) => ({
+                            ...current,
+                            shelves: value,
+                            lightingEnabled:
+                              value === "0"
+                                ? "Nee"
+                                : current.lightingEnabled,
+                            woodEnabled:
+                              value === "0" &&
+                              current.woodPosition === "Inside shelves only"
+                                ? "Nee"
+                                : current.woodEnabled,
+                          }));
+                        }}
+                      />
+                    ))}
                   </div>
                 </div>
               </fieldset>
 
-              {/* =============================================
-                  PREVIOUS CONFIG
-              ============================================= */}
+              {/* ADVANCED */}
 
-              {(config.type ||
-                config.width ||
-                config.cabinet ||
-                config.wood) && (
-                <div className="mt-7 rounded-2xl border border-white/[0.05] bg-white/[0.018] p-4">
-                  <p className="mb-3 text-[9px] font-medium uppercase tracking-[0.18em] text-neutral-700">
-                    Jouw eerdere keuzes
-                  </p>
+              <div className="mt-7 overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.015]">
+                <button
+                  type="button"
+                  onClick={() => setAdvancedOpen((value) => !value)}
+                  className="flex w-full items-center justify-between gap-4 p-4 text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#d4b477]/10 text-[#d4b477]">
+                      <IconSliders className="h-4 w-4" />
+                    </span>
 
-                  <div className="space-y-2 text-[11px] text-neutral-600">
-                    {config.type && (
-                      <p>
-                        Model:{" "}
-                        <span className="text-neutral-400">
-                          {config.type}
-                        </span>
+                    <div>
+                      <p className="text-sm font-medium">
+                        Geavanceerde opties
                       </p>
-                    )}
-
-                    {config.width && (
-                      <p>
-                        Breedte:{" "}
-                        <span className="text-neutral-400">
-                          {config.width}
-                        </span>
+                      <p className="mt-1 text-[9px] text-neutral-600">
+                        Hout, LED, vakken, TV, haard, meubel en afwerking
                       </p>
-                    )}
-
-                    {config.cabinet && (
-                      <p>
-                        TV-meubel:{" "}
-                        <span className="text-neutral-400">
-                          {config.cabinet}
-                        </span>
-                      </p>
-                    )}
-
-                    {config.wood && (
-                      <p>
-                        Afwerking:{" "}
-                        <span className="text-neutral-400">
-                          {config.wood}
-                        </span>
-                      </p>
-                    )}
+                    </div>
                   </div>
-                </div>
-              )}
 
-              {/* =============================================
-                  GENERATE
-              ============================================= */}
+                  <span
+                    className={`text-lg text-neutral-500 transition ${
+                      advancedOpen ? "rotate-45" : ""
+                    }`}
+                  >
+                    +
+                  </span>
+                </button>
+
+                {advancedOpen && (
+                  <div className="space-y-7 border-t border-white/[0.06] p-4">
+                    {/* LAYOUT */}
+
+                    <div>
+                      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                        Layout
+                      </p>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label>
+                          <span className="mb-2 block text-[11px] font-medium text-neutral-400">
+                            Cinewall breedte
+                          </span>
+                          <input
+                            value={design.cinewallWidth}
+                            onChange={(event) =>
+                              updateDesign(
+                                "cinewallWidth",
+                                event.target.value
+                              )
+                            }
+                            placeholder="Bijv. 2.8m"
+                            className="w-full rounded-xl border border-white/[0.07] bg-[#111214] px-3 py-3 text-[12px] text-neutral-300 outline-none focus:border-[#8d7247]"
+                          />
+                        </label>
+
+                        <SelectField
+                          label="Uitlijning"
+                          value={design.layoutAlignment}
+                          options={["Centered", "Full wall"]}
+                          onChange={(value) =>
+                            updateDesign("layoutAlignment", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Symmetrie"
+                          value={design.symmetry}
+                          options={["Symmetrical", "Asymmetrical"]}
+                          onChange={(value) =>
+                            updateDesign("symmetry", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Hoogte"
+                          value={design.heightStyle}
+                          options={["Normal", "Tall", "Floor-to-ceiling"]}
+                          onChange={(value) =>
+                            updateDesign("heightStyle", value)
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* SHELVES */}
+
+                    <div>
+                      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                        Vakken / niches
+                      </p>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label>
+                          <span className="mb-2 block text-[11px] font-medium text-neutral-400">
+                            Exact aantal
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="12"
+                            value={design.shelves}
+                            onChange={(event) => {
+                              const value = String(
+                                Math.max(
+                                  0,
+                                  Math.min(
+                                    12,
+                                    Number.parseInt(event.target.value || "0", 10)
+                                  )
+                                )
+                              );
+
+                              setDesign((current) => ({
+                                ...current,
+                                shelves: value,
+                                lightingEnabled:
+                                  value === "0"
+                                    ? "Nee"
+                                    : current.lightingEnabled,
+                              }));
+                            }}
+                            className="w-full rounded-xl border border-white/[0.07] bg-[#111214] px-3 py-3 text-[12px] text-neutral-300 outline-none"
+                          />
+                        </label>
+
+                        <SelectField
+                          label="Positie"
+                          value={design.shelfPosition}
+                          options={["Both sides", "Left", "Right"]}
+                          onChange={(value) =>
+                            updateDesign("shelfPosition", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Vorm"
+                          value={design.shelfShape}
+                          options={[
+                            "Rectangle",
+                            "Square",
+                            "Vertical",
+                            "Horizontal",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("shelfShape", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Diepte"
+                          value={design.shelfDepth}
+                          options={["Shallow", "Medium", "Deep"]}
+                          onChange={(value) =>
+                            updateDesign("shelfDepth", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Type"
+                          value={design.shelfType}
+                          options={["Open", "Closed look", "Mixed"]}
+                          onChange={(value) =>
+                            updateDesign("shelfType", value)
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* WOOD */}
+
+                    <div>
+                      <div className="mb-3 flex items-center justify-between">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                          Hout
+                        </p>
+
+                        <div className="flex gap-2">
+                          <ToggleChoice
+                            label="Ja"
+                            active={design.woodEnabled === "Ja"}
+                            onClick={() =>
+                              updateDesign("woodEnabled", "Ja")
+                            }
+                          />
+                          <ToggleChoice
+                            label="Nee"
+                            active={design.woodEnabled === "Nee"}
+                            onClick={() =>
+                              updateDesign("woodEnabled", "Nee")
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <SelectField
+                          label="Houtsoort"
+                          value={design.woodType}
+                          options={[
+                            "Light Oak",
+                            "Natural Oak",
+                            "Walnut",
+                            "Black Wood",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("woodType", value)
+                          }
+                          disabled={design.woodEnabled !== "Ja"}
+                        />
+
+                        <SelectField
+                          label="Waar komt het hout?"
+                          value={design.woodPosition}
+                          options={[
+                            "Inside shelves only",
+                            "Back panel only",
+                            "Side accents",
+                            "Full niche finish",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("woodPosition", value)
+                          }
+                          disabled={design.woodEnabled !== "Ja"}
+                        />
+
+                        <SelectField
+                          label="Houtstijl"
+                          value={design.woodStyle}
+                          options={["Smooth", "Slatted", "Textured"]}
+                          onChange={(value) =>
+                            updateDesign("woodStyle", value)
+                          }
+                          disabled={design.woodEnabled !== "Ja"}
+                        />
+                      </div>
+                    </div>
+
+                    {/* LIGHTING */}
+
+                    <div>
+                      <div className="mb-3 flex items-center justify-between">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                          LED verlichting
+                        </p>
+
+                        <div className="flex gap-2">
+                          <ToggleChoice
+                            label="Ja"
+                            active={design.lightingEnabled === "Ja"}
+                            onClick={() =>
+                              updateDesign("lightingEnabled", "Ja")
+                            }
+                          />
+                          <ToggleChoice
+                            label="Nee"
+                            active={design.lightingEnabled === "Nee"}
+                            onClick={() =>
+                              updateDesign("lightingEnabled", "Nee")
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <SelectField
+                          label="Lichtkleur"
+                          value={design.lightingColor}
+                          options={["Warm", "Neutral", "Cool"]}
+                          onChange={(value) =>
+                            updateDesign("lightingColor", value)
+                          }
+                          disabled={
+                            design.lightingEnabled !== "Ja" ||
+                            design.shelves === "0"
+                          }
+                        />
+
+                        <SelectField
+                          label="Sterkte"
+                          value={design.lightingStrength}
+                          options={["Soft", "Medium", "Strong"]}
+                          onChange={(value) =>
+                            updateDesign("lightingStrength", value)
+                          }
+                          disabled={
+                            design.lightingEnabled !== "Ja" ||
+                            design.shelves === "0"
+                          }
+                        />
+
+                        <SelectField
+                          label="Positie"
+                          value={design.lightingPosition}
+                          options={[
+                            "Top only",
+                            "Top + sides",
+                            "Hidden glow",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("lightingPosition", value)
+                          }
+                          disabled={
+                            design.lightingEnabled !== "Ja" ||
+                            design.shelves === "0"
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* TV */}
+
+                    <div>
+                      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                        TV
+                      </p>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <SelectField
+                          label="TV stijl"
+                          value={design.tvStyle}
+                          options={[
+                            "Standard",
+                            "Frameless",
+                            "Premium thin",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("tvStyle", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="TV positie"
+                          value={design.tvPosition}
+                          options={[
+                            "Center",
+                            "Slightly higher",
+                            "Slightly lower",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("tvPosition", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Visuele nadruk"
+                          value={design.tvEmphasis}
+                          options={[
+                            "Balanced",
+                            "Bigger visual focus",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("tvEmphasis", value)
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    {/* FIREPLACE */}
+
+                    <div>
+                      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                        Sfeerhaard
+                      </p>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <label>
+                          <span className="mb-2 block text-[11px] font-medium text-neutral-400">
+                            Haardmodel
+                          </span>
+                          <input
+                            value={design.fireplaceModel}
+                            disabled={design.fireplace !== "Ja"}
+                            onChange={(event) =>
+                              updateDesign(
+                                "fireplaceModel",
+                                event.target.value
+                              )
+                            }
+                            placeholder="Bijv. 3D 183 cm"
+                            className="w-full rounded-xl border border-white/[0.07] bg-[#111214] px-3 py-3 text-[12px] text-neutral-300 outline-none disabled:opacity-40"
+                          />
+                        </label>
+
+                        <SelectField
+                          label="Breedte"
+                          value={design.fireplaceWidth}
+                          options={["Narrow", "Medium", "Wide"]}
+                          onChange={(value) =>
+                            updateDesign("fireplaceWidth", value)
+                          }
+                          disabled={design.fireplace !== "Ja"}
+                        />
+
+                        <SelectField
+                          label="Positie"
+                          value={design.fireplacePosition}
+                          options={["Under TV", "Lower section"]}
+                          onChange={(value) =>
+                            updateDesign("fireplacePosition", value)
+                          }
+                          disabled={design.fireplace !== "Ja"}
+                        />
+
+                        <SelectField
+                          label="Afwerking"
+                          value={design.fireplaceFinish}
+                          options={[
+                            "Seamless",
+                            "Minimal frame",
+                            "Luxury frame",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("fireplaceFinish", value)
+                          }
+                          disabled={design.fireplace !== "Ja"}
+                        />
+                      </div>
+                    </div>
+
+                    {/* CABINET */}
+
+                    <div>
+                      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                        TV-meubel
+                      </p>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <SelectField
+                          label="Type"
+                          value={design.cabinetType}
+                          options={[
+                            "None",
+                            "Floating",
+                            "Full width",
+                            "Compact",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("cabinetType", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Breedte"
+                          value={design.cabinetWidth}
+                          options={["Auto", "180 cm", "240 cm", "280 cm"]}
+                          onChange={(value) =>
+                            updateDesign("cabinetWidth", value)
+                          }
+                          disabled={design.cabinetType === "None"}
+                        />
+
+                        <SelectField
+                          label="Kleur"
+                          value={design.cabinetColor}
+                          options={[
+                            "Match wall",
+                            "Wood",
+                            "Dark",
+                            "Light",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("cabinetColor", value)
+                          }
+                          disabled={design.cabinetType === "None"}
+                        />
+
+                        <SelectField
+                          label="Afwerking"
+                          value={design.cabinetFinish}
+                          options={["Minimal", "Storage", "Premium"]}
+                          onChange={(value) =>
+                            updateDesign("cabinetFinish", value)
+                          }
+                          disabled={design.cabinetType === "None"}
+                        />
+                      </div>
+                    </div>
+
+                    {/* FINISH */}
+
+                    <div>
+                      <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b89861]">
+                        Kleur & afwerking
+                      </p>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <SelectField
+                          label="Wandkleur"
+                          value={design.wallColor}
+                          options={[
+                            "Light",
+                            "Warm beige",
+                            "Taupe",
+                            "Dark",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("wallColor", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Oppervlakte"
+                          value={design.finishStyle}
+                          options={[
+                            "Smooth plaster",
+                            "Matte luxury",
+                            "Soft stone look",
+                          ]}
+                          onChange={(value) =>
+                            updateDesign("finishStyle", value)
+                          }
+                        />
+
+                        <SelectField
+                          label="Contrast"
+                          value={design.contrast}
+                          options={["Soft", "Balanced", "Bold"]}
+                          onChange={(value) =>
+                            updateDesign("contrast", value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* GENERATE */}
 
               <div className="mt-7 border-t border-white/[0.06] pt-6">
                 <button
                   type="button"
                   disabled={!imageFile || loading}
-                  onClick={generateCinewall}
+                  onClick={() => void generateCinewall()}
                   className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[#d4b477] px-5 py-[17px] text-sm font-semibold text-[#15110c] transition hover:bg-[#dfc38b] disabled:cursor-not-allowed disabled:bg-[#202124] disabled:text-neutral-700"
                 >
-                  {!loading && imageFile && (
-                    <span className="absolute inset-0 -translate-x-[120%] bg-gradient-to-r from-transparent via-white/20 to-transparent transition duration-700 group-hover:translate-x-[120%]" />
-                  )}
-
                   {loading ? (
-                    <span className="relative flex items-center gap-3">
+                    <>
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-
                       AI creëert jouw ontwerp... {seconds}s
-                    </span>
+                    </>
                   ) : (
-                    <span className="relative flex items-center gap-2">
+                    <>
                       <IconMagic className="h-4 w-4" />
-
                       {imageFile
-                        ? "Genereer mijn ontwerp met AI"
+                        ? generatedImage
+                          ? "Genereer nieuwe versie"
+                          : "Genereer mijn ontwerp met AI"
                         : "Upload eerst een foto"}
-                    </span>
+                    </>
                   )}
                 </button>
 
                 <div className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                   <SmallCheck>Persoonlijk</SmallCheck>
-                  <SmallCheck>AI-powered</SmallCheck>
-                  <SmallCheck>Vrijblijvend</SmallCheck>
+                  <SmallCheck>Geavanceerd</SmallCheck>
+                  <SmallCheck>AI Assistant</SmallCheck>
                 </div>
-
-                {loading && (
-                  <div className="mt-5 rounded-xl border border-[#9b7b49]/15 bg-[#9b7b49]/[0.04] p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <span className="text-xs text-neutral-400">
-                        Jouw ontwerp wordt opgebouwd
-                      </span>
-
-                      <span className="text-[10px] text-[#cba96b]">
-                        {seconds}s
-                      </span>
-                    </div>
-
-                    <div className="h-1 overflow-hidden rounded-full bg-white/[0.04]">
-                      <div className="h-full w-2/3 animate-pulse rounded-full bg-[#d4b477]" />
-                    </div>
-
-                    <p className="mt-3 text-[9px] leading-5 text-neutral-700">
-                      Wallmade AI analyseert jouw ruimte en gekozen
-                      configuratie.
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
 
-          {/* ===================================================
-              AI ASSISTANT PREVIEW
-          =================================================== */}
-
-          <div className="mt-5 rounded-2xl border border-white/[0.06] bg-[#0e0f10] p-5">
+          <div className="mt-5 rounded-2xl border border-[#957646]/20 bg-[#0e0f10] p-5">
             <div className="flex items-start gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#957646]/35 bg-[#17130d] text-[#d4b477]">
                 <IconMagic className="h-5 w-5" />
               </div>
 
-              <div className="min-w-0">
+              <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="text-sm font-medium">
                     Wallmade AI Assistant
                   </p>
-
-                  <span className="rounded-full border border-white/[0.06] bg-white/[0.025] px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-neutral-700">
-                    Binnenkort
+                  <span className="rounded-full bg-emerald-400/10 px-2 py-1 text-[8px] uppercase tracking-[0.14em] text-emerald-300">
+                    Actief na generatie
                   </span>
                 </div>
 
                 <p className="mt-2 text-xs leading-5 text-neutral-600">
-                  Vraag straks wijzigingen aan jouw ontwerp, zoals extra
-                  verlichting, andere vakken, een bredere haard of een nieuwe
-                  indeling.
+                  Na je eerste ontwerp kun je in je eigen taal vragen om
+                  wijzigingen. De assistent onthoudt je instellingen en past
+                  het ontwerp verder aan.
                 </p>
               </div>
             </div>
@@ -1409,9 +2364,7 @@ export default function AIDesigner() {
         </section>
       )}
 
-      {/* =====================================================
-          ERROR
-      ===================================================== */}
+      {/* ERROR */}
 
       {error && (
         <div className="relative z-30 mx-auto max-w-7xl px-4 pb-6 sm:px-5 md:px-8">
@@ -1422,17 +2375,12 @@ export default function AIDesigner() {
             <p className="text-sm font-medium text-red-200">
               Er ging iets mis
             </p>
-
-            <p className="mt-1 text-xs leading-5 text-red-200/60">
-              {error}
-            </p>
+            <p className="mt-1 text-xs leading-5 text-red-200/60">{error}</p>
           </div>
         </div>
       )}
 
-      {/* =====================================================
-          CONTACT POPUP
-      ===================================================== */}
+      {/* CONTACT POPUP */}
 
       <dialog
         ref={dialogRef}
@@ -1440,10 +2388,7 @@ export default function AIDesigner() {
         onCancel={() => setContactOpen(false)}
         onClose={() => {
           setContactOpen(false);
-
-          contactButtonRef.current?.focus({
-            preventScroll: true,
-          });
+          contactButtonRef.current?.focus({ preventScroll: true });
         }}
         onClick={(event) => {
           if (event.target === event.currentTarget) {
@@ -1456,7 +2401,6 @@ export default function AIDesigner() {
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#997a49]/30 bg-[#17130d] px-3 py-1.5">
               <IconSparkles className="h-3 w-3 text-[#d4b477]" />
-
               <span className="text-[8px] uppercase tracking-[0.18em] text-[#c5a56d]">
                 Volgende stap
               </span>
@@ -1467,7 +2411,7 @@ export default function AIDesigner() {
               autoFocus
               aria-label="Sluiten"
               onClick={() => setContactOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.025] text-lg text-neutral-500 transition hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.025] text-lg text-neutral-500"
             >
               ×
             </button>
@@ -1488,138 +2432,48 @@ export default function AIDesigner() {
             mogelijkheden en maken een persoonlijke offerte.
           </p>
 
-          <div className="mt-6 rounded-2xl border border-[#987847]/20 bg-[#987847]/[0.05] p-4">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#d4b477]/10 text-[#d4b477]">
-                <IconSparkles className="h-4 w-4" />
-              </span>
-
-              <div>
-                <p className="text-sm font-medium">
-                  Jouw AI-ontwerp is het startpunt
-                </p>
-
-                <p className="mt-1 text-[10px] leading-5 text-neutral-600">
-                  Exacte maten, materialen en technische details stemmen we
-                  samen af.
-                </p>
-              </div>
-            </div>
-          </div>
-
           <div className="mt-6 space-y-3">
-            {/* WHATSAPP */}
-
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.07] p-4 transition hover:bg-[#25D366]/[0.12]"
+              className="flex items-center justify-between rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.07] p-4"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#25D366]">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-6 w-6 fill-white"
-                  aria-hidden="true"
-                >
-                  <path d="M20.52 3.48A11.91 11.91 0 0 0 12.05 0C5.47 0 .11 5.35.1 11.94c0 2.1.55 4.15 1.6 5.96L0 24l6.25-1.64a11.95 11.95 0 0 0 5.79 1.48h.01C18.63 23.84 24 18.49 24 11.9c0-3.18-1.24-6.17-3.48-8.42ZM12.05 21.82h-.01a9.9 9.9 0 0 1-5.05-1.38l-.36-.21-3.71.97.99-3.62-.24-.37a9.87 9.87 0 0 1-1.52-5.27c0-5.47 4.45-9.92 9.93-9.92a9.86 9.86 0 0 1 7.01 2.9 9.85 9.85 0 0 1 2.9 7.01c0 5.47-4.45 9.89-9.94 9.89Zm5.44-7.42c-.3-.15-1.77-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.18.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.03-.53-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z" />
-                </svg>
-              </span>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-white">
-                  Verder via WhatsApp
-                </p>
-
+              <div>
+                <p className="text-sm font-semibold text-white">WhatsApp</p>
                 <p className="mt-1 text-[10px] text-neutral-600">
                   Snel contact en persoonlijke offerte
                 </p>
               </div>
-
-              <IconArrow className="h-4 w-4 text-[#25D366] transition group-hover:translate-x-0.5" />
+              <IconArrow className="h-4 w-4 text-[#25D366]" />
             </a>
-
-            {/* INSTAGRAM */}
 
             <a
               href={INSTAGRAM}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 transition hover:border-white/[0.14] hover:bg-white/[0.04]"
+              className="flex items-center justify-between rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4"
             >
-              <span
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  background:
-                    "radial-gradient(circle at 30% 105%, #fdf497 0%, #fd5949 40%, #d6249f 65%, #285aeb 100%)",
-                }}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-6 w-6 text-white"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle
-                    cx="17.5"
-                    cy="6.5"
-                    r="1"
-                    fill="currentColor"
-                    stroke="none"
-                  />
-                </svg>
-              </span>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">
-                  Instagram
-                </p>
-
+              <div>
+                <p className="text-sm font-semibold">Instagram</p>
                 <p className="mt-1 text-[10px] text-neutral-600">
                   @solutionbouw.nl
                 </p>
               </div>
-
-              <IconArrow className="h-4 w-4 text-neutral-600 transition group-hover:translate-x-0.5" />
+              <IconArrow className="h-4 w-4 text-neutral-600" />
             </a>
-
-            {/* EMAIL */}
 
             <a
               href={emailUrl}
-              className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 transition hover:border-white/[0.14] hover:bg-white/[0.04]"
+              className="flex items-center justify-between rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4"
             >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.025]">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-6 w-6 text-neutral-400"
-                  aria-hidden="true"
-                >
-                  <rect x="3" y="5" width="18" height="14" rx="3" />
-                  <path d="m4 7 8 6 8-6" />
-                </svg>
-              </span>
-
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold">
-                  E-mail
-                </p>
-
+              <div>
+                <p className="text-sm font-semibold">E-mail</p>
                 <p className="mt-1 text-[10px] text-neutral-600">
                   Ontvang een persoonlijke offerte
                 </p>
               </div>
-
-              <IconArrow className="h-4 w-4 text-neutral-600 transition group-hover:translate-x-0.5" />
+              <IconArrow className="h-4 w-4 text-neutral-600" />
             </a>
           </div>
 
@@ -1644,10 +2498,6 @@ export default function AIDesigner() {
               {copied ? "Gekopieerd ✓" : "Kopieer bericht"}
             </button>
           </details>
-
-          <p className="mt-5 text-center text-[9px] leading-5 text-neutral-700">
-            Stuur eventueel ook een screenshot van jouw ontwerp mee.
-          </p>
         </div>
       </dialog>
     </main>

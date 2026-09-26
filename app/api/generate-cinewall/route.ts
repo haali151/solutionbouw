@@ -1,26 +1,459 @@
 import OpenAI, { toFile } from "openai";
+import sharp from "sharp";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const runtime = "nodejs";
+
+/* =========================================================
+   WALLMADE AI IMAGE ENGINE
+========================================================= */
+
+function getField(
+  formData: FormData,
+  name: string,
+  fallback = ""
+) {
+  const value = formData.get(name);
+
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+
+  return String(value).trim();
+}
+
+function isYes(value: string) {
+  return /^(ja|yes|true|1|aan|enabled)$/i.test(
+    value.trim()
+  );
+}
+
+function isNo(value: string) {
+  return /^(nee|geen|no|false|0|uit|disabled|none)$/i.test(
+    value.trim()
+  );
+}
+
+function parseNicheCount(value: string) {
+  const parsed = Number.parseInt(value, 10);
+
+  if (!Number.isFinite(parsed)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.min(12, parsed));
+}
+
+/* =========================================================
+   NICHE INSTRUCTIONS
+========================================================= */
+
+function makeNicheInstruction({
+  count,
+  position,
+  shape,
+  depth,
+  type,
+}: {
+  count: number;
+  position: string;
+  shape: string;
+  depth: string;
+  type: string;
+}) {
+  if (count === 0) {
+    return `
+NICHE COUNT = 0.
+
+Create NO decorative niches.
+Create NO recessed display boxes.
+Create NO decorative shelf openings.
+
+The TV recess, fireplace opening, cabinet,
+shadow gaps and construction gaps DO NOT count
+as decorative niches.
+`;
+  }
+
+  let placement = "";
+
+  if (/^left$/i.test(position)) {
+    placement = `
+Place ALL ${count} decorative niches on the LEFT side
+of the central TV composition.
+`;
+  } else if (/^right$/i.test(position)) {
+    placement = `
+Place ALL ${count} decorative niches on the RIGHT side
+of the central TV composition.
+`;
+  } else if (/both/i.test(position)) {
+    placement = `
+Distribute the ${count} decorative niches across BOTH sides.
+
+Keep the arrangement visually balanced.
+
+If the number is even:
+use an equal number on each side.
+
+If the number is odd:
+one side may contain one additional niche.
+`;
+  } else if (count === 2) {
+    placement = `
+Preferred arrangement:
+ONE decorative niche on the left
+and ONE decorative niche on the right.
+`;
+  } else if (count % 2 === 0) {
+    placement = `
+Preferred arrangement:
+distribute the niches equally between
+the left and right sides.
+`;
+  } else {
+    placement = `
+Arrange the niches in the most visually balanced
+and physically buildable layout.
+`;
+  }
+
+  const shapeInstruction = shape
+    ? `
+Requested niche shape:
+${shape}
+
+Respect this shape consistently unless the real wall
+makes a small proportional adjustment necessary.
+`
+    : "";
+
+  const depthInstruction = depth
+    ? `
+Requested niche depth:
+${depth}
+
+Represent the depth realistically with believable
+shadowing and construction thickness.
+`
+    : "";
+
+  const typeInstruction = type
+    ? `
+Requested niche type:
+${type}
+`
+    : "";
+
+  return `
+NICHE COUNT = EXACTLY ${count}.
+
+The final Cinewall MUST visibly contain exactly
+${count} decorative niches.
+
+${placement}
+
+${shapeInstruction}
+
+${depthInstruction}
+
+${typeInstruction}
+
+CRITICAL COUNTING RULE:
+
+A decorative niche means ONE intentionally designed
+recessed display opening.
+
+The TV opening is NOT a decorative niche.
+The fireplace is NOT a decorative niche.
+The TV cabinet is NOT a decorative niche.
+A shadow gap is NOT a decorative niche.
+
+Do NOT create extra openings.
+
+Do NOT divide one requested niche into several
+visible compartments if that would visually increase
+the niche count.
+
+Before output, internally count the visible decorative
+niches.
+
+The visible total MUST equal exactly ${count}.
+`;
+}
+
+/* =========================================================
+   POST
+========================================================= */
 
 export async function POST(request: Request) {
   try {
+    /* =====================================================
+       API KEY
+    ===================================================== */
+
+    const apiKey = process.env.OPENAI_API_KEY;
+
+    if (!apiKey) {
+      return Response.json(
+        {
+          success: false,
+          error: "OPENAI_API_KEY ontbreekt.",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    const openai = new OpenAI({
+      apiKey,
+    });
+
+    /* =====================================================
+       FORM DATA
+    ===================================================== */
+
     const formData = await request.formData();
 
     const image = formData.get("image") as File | null;
 
-    const style = String(formData.get("style") || "Modern");
-    const tvSize = String(formData.get("tvSize") || "65");
-    const fireplace = String(formData.get("fireplace") || "Ja");
-    const shelves = String(formData.get("shelves") || "4");
+    /* =====================================================
+       BASIC OPTIONS
+    ===================================================== */
 
-    const cinewallType = String(formData.get("cinewallType") || "");
-    const cinewallWidth = String(formData.get("cinewallWidth") || "");
-    const fireplaceModel = String(formData.get("fireplaceModel") || "");
-    const cabinet = String(formData.get("cabinet") || "");
-    const wood = String(formData.get("wood") || "");
-    const price = String(formData.get("price") || "");
+    const style = getField(
+      formData,
+      "style",
+      "Modern"
+    );
+
+    const tvSize = getField(
+      formData,
+      "tvSize",
+      "65"
+    );
+
+    const fireplace = getField(
+      formData,
+      "fireplace",
+      "Ja"
+    );
+
+    const shelvesRaw = getField(
+      formData,
+      "shelves",
+      "4"
+    );
+
+    /* =====================================================
+       EXISTING CONFIGURATOR OPTIONS
+    ===================================================== */
+
+    const cinewallType = getField(
+      formData,
+      "cinewallType"
+    );
+
+    const cinewallWidth = getField(
+      formData,
+      "cinewallWidth"
+    );
+
+    const fireplaceModel = getField(
+      formData,
+      "fireplaceModel"
+    );
+
+    const cabinet = getField(
+      formData,
+      "cabinet"
+    );
+
+    const wood = getField(
+      formData,
+      "wood"
+    );
+
+    const price = getField(
+      formData,
+      "price"
+    );
+
+    /* =====================================================
+       LAYOUT OPTIONS
+    ===================================================== */
+
+    const layoutAlignment = getField(
+      formData,
+      "layoutAlignment"
+    );
+
+    const symmetry = getField(
+      formData,
+      "symmetry"
+    );
+
+    const heightStyle = getField(
+      formData,
+      "heightStyle"
+    );
+
+    /* =====================================================
+       TV OPTIONS
+    ===================================================== */
+
+    const tvStyle = getField(
+      formData,
+      "tvStyle"
+    );
+
+    const tvPosition = getField(
+      formData,
+      "tvPosition"
+    );
+
+    const tvEmphasis = getField(
+      formData,
+      "tvEmphasis"
+    );
+
+    /* =====================================================
+       FIREPLACE OPTIONS
+    ===================================================== */
+
+    const fireplaceWidth = getField(
+      formData,
+      "fireplaceWidth"
+    );
+
+    const fireplacePosition = getField(
+      formData,
+      "fireplacePosition"
+    );
+
+    const fireplaceFinish = getField(
+      formData,
+      "fireplaceFinish"
+    );
+
+    /* =====================================================
+       SHELF / NICHE OPTIONS
+    ===================================================== */
+
+    const shelfPosition = getField(
+      formData,
+      "shelfPosition"
+    );
+
+    const shelfShape = getField(
+      formData,
+      "shelfShape"
+    );
+
+    const shelfDepth = getField(
+      formData,
+      "shelfDepth"
+    );
+
+    const shelfType = getField(
+      formData,
+      "shelfType"
+    );
+
+    /* =====================================================
+       WOOD OPTIONS
+    ===================================================== */
+
+    const woodEnabledRaw = getField(
+      formData,
+      "woodEnabled"
+    );
+
+    const woodType = getField(
+      formData,
+      "woodType"
+    );
+
+    const woodPosition = getField(
+      formData,
+      "woodPosition"
+    );
+
+    const woodStyle = getField(
+      formData,
+      "woodStyle"
+    );
+
+    /* =====================================================
+       LIGHTING OPTIONS
+    ===================================================== */
+
+    const lightingEnabledRaw = getField(
+      formData,
+      "lightingEnabled"
+    );
+
+    const lightingColor = getField(
+      formData,
+      "lightingColor"
+    );
+
+    const lightingStrength = getField(
+      formData,
+      "lightingStrength"
+    );
+
+    const lightingPosition = getField(
+      formData,
+      "lightingPosition"
+    );
+
+    /* =====================================================
+       CABINET OPTIONS
+    ===================================================== */
+
+    const cabinetType = getField(
+      formData,
+      "cabinetType"
+    );
+
+    const cabinetWidth = getField(
+      formData,
+      "cabinetWidth"
+    );
+
+    const cabinetColor = getField(
+      formData,
+      "cabinetColor"
+    );
+
+    const cabinetFinish = getField(
+      formData,
+      "cabinetFinish"
+    );
+
+    /* =====================================================
+       COLOR / FINISH OPTIONS
+    ===================================================== */
+
+    const wallColor = getField(
+      formData,
+      "wallColor"
+    );
+
+    const finishStyle = getField(
+      formData,
+      "finishStyle"
+    );
+
+    const contrast = getField(
+      formData,
+      "contrast"
+    );
+
+    /* =====================================================
+       IMAGE VALIDATION
+    ===================================================== */
 
     if (!image) {
       return Response.json(
@@ -34,11 +467,18 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!["image/jpeg", "image/png", "image/webp"].includes(image.type)) {
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!allowedTypes.includes(image.type)) {
       return Response.json(
         {
           success: false,
-          error: "Gebruik een JPG-, PNG- of WebP-afbeelding.",
+          error:
+            "Gebruik een JPG-, PNG- of WebP-afbeelding.",
         },
         {
           status: 400,
@@ -46,11 +486,12 @@ export async function POST(request: Request) {
       );
     }
 
-    if (image.size > 10 * 1024 * 1024) {
+    if (image.size > 15 * 1024 * 1024) {
       return Response.json(
         {
           success: false,
-          error: "De afbeelding mag maximaal 10 MB zijn.",
+          error:
+            "De afbeelding mag maximaal 15 MB zijn.",
         },
         {
           status: 400,
@@ -58,111 +499,142 @@ export async function POST(request: Request) {
       );
     }
 
-    const bytes = await image.arrayBuffer();
+    /* =====================================================
+       NORMALIZE IMAGE
+    ===================================================== */
+
+    const originalBytes = Buffer.from(
+      await image.arrayBuffer()
+    );
+
+    let normalizedImage: Buffer;
+
+    try {
+      normalizedImage = await sharp(originalBytes, {
+        failOn: "error",
+      })
+        .rotate()
+        .resize({
+          width: 2048,
+          height: 2048,
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .flatten({
+          background: {
+            r: 255,
+            g: 255,
+            b: 255,
+          },
+        })
+        .png({
+          compressionLevel: 6,
+        })
+        .toBuffer();
+    } catch (imageError) {
+      console.error(
+        "Image normalization error:",
+        imageError
+      );
+
+      return Response.json(
+        {
+          success: false,
+          error:
+            "De afbeelding kon niet worden verwerkt. Probeer een andere JPG- of PNG-afbeelding.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    console.log("Wallmade image:", {
+      originalName: image.name,
+      originalType: image.type,
+      originalSize: image.size,
+      normalizedSize: normalizedImage.length,
+    });
 
     const uploadedImage = await toFile(
-      Buffer.from(bytes),
-      image.name || "woonkamer.png",
+      normalizedImage,
+      "wallmade-room.png",
       {
-        type: image.type || "image/png",
+        type: "image/png",
       }
     );
 
-    const hasFireplace =
-      fireplace.toLowerCase() === "ja" &&
-      !/^(geen|nee)$/i.test(fireplaceModel.trim());
+    /* =====================================================
+       DERIVED CONFIGURATION
+    ===================================================== */
 
-    const hasCabinet =
-      Boolean(cabinet.trim()) &&
-      !/^(geen|geen tv-meubel|nee)$/i.test(cabinet.trim());
+    const nicheCount =
+      parseNicheCount(shelvesRaw);
+
+    const hasFireplace =
+      !isNo(fireplace);
+
+    const hasExistingWood =
+      Boolean(wood.trim()) &&
+      !isNo(wood);
 
     const hasWood =
-      Boolean(wood.trim()) &&
-      !/^(false|geen|nee|no|0)$/i.test(wood.trim());
+      woodEnabledRaw
+        ? isYes(woodEnabledRaw)
+        : hasExistingWood;
 
-    const nicheCount = ["0", "2", "4", "6"].includes(shelves)
-      ? shelves
-      : "0";
+    const hasLighting =
+      lightingEnabledRaw
+        ? isYes(lightingEnabledRaw)
+        : nicheCount > 0;
+
+    const resolvedCabinetType =
+      cabinetType || cabinet;
+
+    const hasCabinet =
+      Boolean(resolvedCabinetType.trim()) &&
+      !isNo(resolvedCabinetType);
+
+    const resolvedWood =
+      woodType || wood;
+
+    /* =====================================================
+       NICHE INSTRUCTION
+    ===================================================== */
 
     const nicheInstruction =
-      nicheCount === "0"
-        ? `
-NICHE COUNT = 0.
+      makeNicheInstruction({
+        count: nicheCount,
+        position: shelfPosition,
+        shape: shelfShape,
+        depth: shelfDepth,
+        type: shelfType,
+      });
 
-Create NO decorative niches.
-Create NO recessed display boxes.
-Create NO shelf openings on either side of the television.
-
-The television and fireplace may have their own required recesses,
-but these DO NOT count as decorative niches.
-`
-        : nicheCount === "2"
-          ? `
-NICHE COUNT = EXACTLY 2.
-
-Create exactly TWO decorative niches in total.
-
-Preferred layout:
-- ONE tall decorative niche on the left side of the central TV/fireplace composition.
-- ONE tall decorative niche on the right side.
-
-IMPORTANT:
-Each tall niche is ONE niche.
-
-Do NOT divide either niche horizontally into multiple boxes.
-Do NOT add a shelf across the middle that visually creates extra niches.
-Do NOT create upper and lower niche compartments.
-Do NOT create additional small recesses.
-
-The finished Cinewall must visibly contain exactly:
-LEFT NICHE + RIGHT NICHE = 2 decorative niches total.
-`
-          : nicheCount === "4"
-            ? `
-NICHE COUNT = EXACTLY 4.
-
-Create exactly FOUR decorative niches in total.
-
-Preferred layout:
-- TWO clearly separate niches on the left.
-- TWO clearly separate niches on the right.
-
-The four niches should visually read as four intentional openings.
-
-Do NOT add a fifth niche.
-Do NOT add extra recessed boxes.
-`
-            : `
-NICHE COUNT = EXACTLY 6.
-
-Create exactly SIX decorative niches in total.
-
-Preferred layout:
-- THREE clearly separate niches on the left.
-- THREE clearly separate niches on the right.
-
-The six niches should visually read as six intentional openings.
-
-Do NOT add a seventh niche.
-Do NOT add extra recessed boxes.
-`;
+    /* =====================================================
+       PROMPT
+    ===================================================== */
 
     const prompt = `
-You are editing a real customer's living-room photograph for Solutionbouw,
-a professional Dutch Cinewall and interior construction company.
+You are editing a REAL CUSTOMER PHOTOGRAPH
+for WALLMADE, a professional Dutch Cinewall
+and interior construction company.
 
 THIS IS AN IMAGE EDITING TASK.
+
 DO NOT CREATE A NEW ROOM.
 
 ==================================================
-MOST IMPORTANT RULES
+TOP PRIORITIES
 ==================================================
 
 1. Preserve the customer's real room.
-2. Follow the requested decorative niche count EXACTLY.
-3. Follow the customer's selected configuration.
-4. Make the Cinewall physically buildable.
-5. Keep the result photorealistic.
+2. Preserve the original camera position.
+3. Follow ALL selected design settings.
+4. Follow the exact decorative niche count.
+5. Keep the design physically buildable.
+6. Keep the result photorealistic.
+7. Change ONLY the intended TV / Cinewall wall.
 
 The uploaded photograph is the source of truth.
 
@@ -174,7 +646,7 @@ Keep unchanged as much as physically possible:
 
 - camera position
 - camera angle
-- perspective
+- lens perspective
 - room dimensions
 - floor
 - ceiling
@@ -183,56 +655,141 @@ Keep unchanged as much as physically possible:
 - stairs
 - radiators
 - surrounding walls
-- existing architecture
 - furniture outside the Cinewall area
 - objects outside the Cinewall area
-- lighting direction
+- natural lighting direction
+- existing architecture
 
-Do NOT redesign the entire room.
+DO NOT:
 
-Do NOT create a different house.
+- create a different house
+- move windows
+- move doors
+- redesign unrelated walls
+- change the floor
+- change the ceiling
+- enlarge the room
+- shrink the room
+- move unrelated furniture
+- invent architectural openings
+- change the camera viewpoint
 
-Do NOT change the floor.
-
-Do NOT change the ceiling.
-
-Do NOT move windows or doors.
-
-Do NOT enlarge or shrink the room.
-
-Do NOT invent architectural openings.
-
-Do NOT move unrelated furniture.
-
-Do NOT change the camera viewpoint.
-
-ONLY redesign the intended main TV wall.
+ONLY redesign the intended main television wall.
 
 ==================================================
-DEFINITION OF A NICHE
+CUSTOMER DESIGN STATE
 ==================================================
 
-For this task, a "niche" means:
+STYLE:
+${style}
 
-ONE intentionally designed decorative recessed opening
-used for decoration, display or architectural styling.
+CINEWALL MODEL:
+${cinewallType || "No specific model supplied"}
 
-A fireplace opening is NOT a decorative niche.
+CINEWALL WIDTH:
+${cinewallWidth || "Determine realistically from the visible wall"}
 
-The TV recess is NOT a decorative niche.
+LAYOUT ALIGNMENT:
+${layoutAlignment || "Use the most natural centered layout"}
 
-A TV cabinet opening is NOT a decorative niche.
+SYMMETRY:
+${symmetry || "Balanced"}
 
-A shadow gap is NOT a decorative niche.
+HEIGHT STYLE:
+${heightStyle || "Determine naturally from the room"}
 
-A tiny construction gap is NOT a decorative niche.
+TV SIZE:
+${tvSize} inch
 
-If one large decorative niche contains internal decorative shelves that divide
-it into separate visible compartments, those compartments may visually become
-multiple niches.
+TV STYLE:
+${tvStyle || "Standard premium television"}
 
-Therefore, when EXACTLY 2 niches are requested, DO NOT divide the two niches
-into upper and lower compartments.
+TV POSITION:
+${tvPosition || "Centered"}
+
+TV EMPHASIS:
+${tvEmphasis || "Balanced"}
+
+FIREPLACE:
+${hasFireplace ? "YES" : "NO"}
+
+FIREPLACE MODEL:
+${fireplaceModel || "No specific model supplied"}
+
+FIREPLACE WIDTH:
+${fireplaceWidth || "Proportional to the design"}
+
+FIREPLACE POSITION:
+${fireplacePosition || "Below the TV"}
+
+FIREPLACE FINISH:
+${fireplaceFinish || "Seamless architectural integration"}
+
+DECORATIVE NICHE COUNT:
+EXACTLY ${nicheCount}
+
+NICHE POSITION:
+${shelfPosition || "Balanced around the TV"}
+
+NICHE SHAPE:
+${shelfShape || "Architecturally appropriate"}
+
+NICHE DEPTH:
+${shelfDepth || "Medium realistic depth"}
+
+NICHE TYPE:
+${shelfType || "Open display niches"}
+
+WOOD ENABLED:
+${hasWood ? "YES" : "NO"}
+
+WOOD TYPE:
+${resolvedWood || "No wood type supplied"}
+
+WOOD POSITION:
+${woodPosition || "No specific position supplied"}
+
+WOOD STYLE:
+${woodStyle || "Smooth premium finish"}
+
+LIGHTING ENABLED:
+${hasLighting ? "YES" : "NO"}
+
+LIGHTING COLOR:
+${lightingColor || "Warm"}
+
+LIGHTING STRENGTH:
+${lightingStrength || "Soft"}
+
+LIGHTING POSITION:
+${lightingPosition || "Concealed inside niches"}
+
+TV CABINET:
+${hasCabinet ? "YES" : "NO"}
+
+CABINET TYPE:
+${resolvedCabinetType || "None"}
+
+CABINET WIDTH:
+${cabinetWidth || "Proportional"}
+
+CABINET COLOR:
+${cabinetColor || "Match the design"}
+
+CABINET FINISH:
+${cabinetFinish || "Minimal"}
+
+WALL COLOR:
+${wallColor || "Respect the selected style and existing room"}
+
+SURFACE FINISH:
+${finishStyle || "Smooth premium architectural finish"}
+
+CONTRAST:
+${contrast || "Balanced"}
+
+PRICE REFERENCE:
+${price || "No price supplied"}
 
 ==================================================
 ABSOLUTE NICHE REQUIREMENT
@@ -240,94 +797,118 @@ ABSOLUTE NICHE REQUIREMENT
 
 ${nicheInstruction}
 
-THIS REQUIREMENT HAS HIGHER PRIORITY THAN DECORATIVE CREATIVITY.
-
-Before producing the final image, internally verify:
-
-Requested decorative niches: ${nicheCount}
-
-Visible decorative niches in final design MUST equal: ${nicheCount}
-
-If your proposed design contains the wrong number,
-simplify or restructure the Cinewall before producing the final image.
+This niche requirement has higher priority
+than decorative creativity.
 
 ==================================================
-CUSTOMER CONFIGURATION
+CINEWALL STRUCTURE
 ==================================================
 
-Cinewall model:
-${cinewallType || "No specific model supplied"}
+Create a premium custom-built Cinewall that
+WALLMADE could realistically construct.
 
-Cinewall width:
-${cinewallWidth || "Determine from the available wall"}
+The television should remain the visual center.
 
-Style:
-${style}
+Use realistic proportions for a
+${tvSize}-inch television.
 
-TV:
-${tvSize} inch
-
-Decorative niches:
-EXACTLY ${nicheCount}
-
-Electric fireplace:
-${fireplace}
-
-Fireplace model:
-${fireplaceModel || "No specific model supplied"}
-
-TV cabinet:
-${cabinet || "No TV cabinet specified"}
-
-Wood / decorative finish:
-${wood || "No specific finish supplied"}
-
-Price reference:
-${price || "No price supplied"}
-
-==================================================
-CINEWALL DESIGN
-==================================================
-
-Create a premium but realistic custom-built Dutch Cinewall.
-
-The television should be the visual center.
-
-Use realistic proportions for a ${tvSize}-inch television.
-
-The Cinewall must fit naturally within the existing wall.
+The Cinewall must fit naturally inside the
+existing wall dimensions.
 
 Use:
+
 - clean architectural lines
+- professional plasterwork
 - precise edges
-- professional plasterwork or panel finishing
-- realistic depth
+- realistic construction depth
 - concealed cables
-- subtle warm lighting
-- realistic shadows
-- premium but buildable materials
+- realistic shadow gaps
+- believable material thickness
+- premium finishes
+- physically realistic structural support
 
 Avoid:
-- futuristic shapes
+
 - fantasy architecture
-- excessive decoration
+- futuristic impossible forms
+- impossible floating elements
 - random shelves
 - random niches
-- excessive LEDs
-- impossible floating structures
+- excessive decoration
+- excessive lighting
+- obvious CGI
 - exaggerated luxury
-- obvious CGI appearance
+- changing unrelated parts of the room
+
+==================================================
+LAYOUT
+==================================================
 
 ${
   cinewallWidth
     ? `
-The requested Cinewall width is approximately ${cinewallWidth}.
-Respect this dimension visually relative to the real wall.
+The requested Cinewall width is:
+${cinewallWidth}
+
+Respect this visually relative to the real wall.
 `
     : `
-Determine a realistic width from the visible wall.
+Determine a realistic Cinewall width from
+the visible wall.
 `
 }
+
+${
+  layoutAlignment
+    ? `
+Requested alignment:
+${layoutAlignment}
+
+Follow this alignment while respecting
+the real architecture.
+`
+    : ""
+}
+
+${
+  symmetry
+    ? `
+Requested symmetry:
+${symmetry}
+`
+    : ""
+}
+
+${
+  heightStyle
+    ? `
+Requested height treatment:
+${heightStyle}
+`
+    : ""
+}
+
+==================================================
+TELEVISION
+==================================================
+
+Include ONE television.
+
+Approximate television size:
+${tvSize} inch.
+
+TV style:
+${tvStyle || "Premium modern television"}
+
+TV position:
+${tvPosition || "Centered"}
+
+TV visual emphasis:
+${tvEmphasis || "Balanced"}
+
+Keep believable viewing height and proportions.
+
+Do NOT create a second television.
 
 ==================================================
 FIREPLACE
@@ -339,26 +920,140 @@ ${
 Include exactly ONE electric fireplace.
 
 Requested model:
-${fireplaceModel}
+${fireplaceModel || "No exact model supplied"}
 
-Integrate it naturally beneath the television.
+Requested width:
+${fireplaceWidth || "Proportional"}
 
-Use realistic proportions and realistic spacing between
-the television and fireplace.
+Requested position:
+${fireplacePosition || "Directly below the television"}
 
-The fireplace must be part of the Cinewall construction.
+Requested finish:
+${fireplaceFinish || "Seamless"}
+
+Integrate the fireplace naturally into
+the Cinewall structure.
+
+Use realistic spacing between the TV
+and fireplace.
 
 Do NOT add a second fireplace.
 
-Remember:
-THE FIREPLACE DOES NOT COUNT AS A DECORATIVE NICHE.
+The fireplace opening DOES NOT count
+as a decorative niche.
 `
     : `
 DO NOT include a fireplace.
 
 No flames.
 No fireplace opening.
-No fireplace-shaped decorative feature.
+No fireplace-shaped decoration.
+`
+}
+
+==================================================
+DECORATIVE NICHES / SHELVES
+==================================================
+
+${nicheInstruction}
+
+Requested position:
+${shelfPosition || "Balanced"}
+
+Requested shape:
+${shelfShape || "Suitable for the design"}
+
+Requested depth:
+${shelfDepth || "Medium"}
+
+Requested type:
+${shelfType || "Open"}
+
+Decorative niches must look deliberately
+designed and structurally possible.
+
+Do not create accidental extra compartments.
+
+==================================================
+WOOD
+==================================================
+
+${
+  hasWood
+    ? `
+WOOD IS REQUIRED.
+
+Wood type / finish:
+${resolvedWood || "Natural premium wood"}
+
+Wood placement:
+${woodPosition || "Use as a controlled architectural accent"}
+
+Wood style:
+${woodStyle || "Smooth"}
+
+IMPORTANT:
+
+Use wood ONLY where requested.
+
+If wood placement is:
+"Inside shelves only"
+
+then apply wood only to the interior surfaces
+or back panels of the decorative niches.
+
+Do NOT cover the entire Cinewall in wood
+unless explicitly requested.
+
+Do NOT create additional niches just to
+show more wood.
+`
+    : `
+DO NOT add decorative wood.
+
+Do NOT invent wood slats.
+Do NOT invent wooden niche interiors.
+Do NOT add random wooden panels.
+`
+}
+
+==================================================
+NICHE LIGHTING
+==================================================
+
+${
+  hasLighting
+    ? `
+DECORATIVE LIGHTING IS REQUIRED.
+
+Lighting color:
+${lightingColor || "Warm"}
+
+Lighting strength:
+${lightingStrength || "Soft"}
+
+Lighting position:
+${lightingPosition || "Concealed inside decorative niches"}
+
+Use realistic concealed LED lighting.
+
+The physical LED strip itself should not
+be visually dominant.
+
+Create believable indirect illumination
+and soft shadows.
+
+Keep the lighting elegant and subtle.
+
+Do NOT add random LED strips elsewhere
+unless explicitly requested.
+`
+    : `
+DO NOT add decorative LED lighting
+inside the niches.
+
+Keep only the room's natural / existing
+lighting.
 `
 }
 
@@ -369,47 +1064,48 @@ TV CABINET
 ${
   hasCabinet
     ? `
-Include the selected TV cabinet:
+Include ONE TV cabinet / media unit.
 
-${cabinet}
+Type:
+${resolvedCabinetType}
 
-Integrate it naturally into the lower section.
+Width:
+${cabinetWidth || "Proportional"}
 
-Keep realistic depth and construction dimensions.
+Color:
+${cabinetColor || "Coordinate with the Cinewall"}
 
-THE TV CABINET DOES NOT COUNT AS A DECORATIVE NICHE.
+Finish:
+${cabinetFinish || "Minimal"}
+
+Integrate it naturally into the lower
+part of the Cinewall.
+
+Keep realistic dimensions and depth.
+
+The cabinet DOES NOT count as a decorative niche.
 `
     : `
-Do not add a separate TV cabinet unless structurally required
-by the specified Cinewall model.
+Do NOT create a separate TV cabinet
+unless structurally required by the
+existing specified Cinewall model.
 `
 }
 
 ==================================================
-WOOD FINISH
+COLOR & FINISH
 ==================================================
 
-${
-  hasWood
-    ? `
-Use the selected wood / decorative finish:
+Wall / Cinewall color:
+${wallColor || "Choose a restrained color appropriate to the selected style"}
 
-${wood}
+Finish:
+${finishStyle || "Smooth premium finish"}
 
-Use it as a controlled architectural accent.
+Contrast:
+${contrast || "Balanced"}
 
-Prefer using the wood finish inside the requested decorative niches
-or in clearly intentional accent areas.
-
-Do NOT cover the entire room in wood.
-
-Do NOT create additional niches simply to show more wood.
-`
-    : `
-Do not invent decorative wood slats or wood panels unless
-required by the selected Cinewall model.
-`
-}
+Do not recolor unrelated room elements.
 
 ==================================================
 STYLE
@@ -418,65 +1114,92 @@ STYLE
 Selected style:
 ${style}
 
-If Modern:
-use calm contemporary materials,
-clean geometry and restrained detailing.
+If MODERN:
 
-If Luxury:
-use richer premium finishes and refined lighting,
-while remaining realistic and buildable.
+- clean geometry
+- contemporary materials
+- calm composition
+- restrained details
 
-If Minimal:
-use fewer visual elements,
-clean surfaces and very subtle detailing.
+If LUXURY:
+
+- richer premium finishes
+- sophisticated detailing
+- refined lighting
+- expensive appearance
+- still realistic and buildable
+
+If MINIMAL:
+
+- fewer visual elements
+- clean surfaces
+- subtle detailing
+- calm architectural composition
 
 ==================================================
 PHOTOREALISM
 ==================================================
 
-Match the original photograph:
+Match the uploaded photograph:
 
 - exposure
 - color temperature
 - perspective
+- camera position
 - lens appearance
 - sharpness
-- light direction
+- lighting direction
 - shadows
 - reflections
 - material texture
 
-The new Cinewall must connect naturally to the existing
-floor, wall and ceiling.
+The new Cinewall must connect naturally
+to the existing:
 
-Do not renovate unrelated areas.
+- floor
+- wall
+- ceiling
 
-Do not beautify the rest of the room unnecessarily.
+Do not unnecessarily beautify or renovate
+the rest of the room.
 
-The final image must look like a photograph taken
-after Solutionbouw completed the installation.
+The result must look like a REAL photograph
+taken after WALLMADE completed the installation.
 
 ==================================================
-FINAL CHECK BEFORE OUTPUT
+FINAL INTERNAL CHECK
 ==================================================
 
-Verify all of these:
+Before returning the image verify:
 
 - Same room: YES
 - Same camera position: YES
 - Same floor: YES
-- Same windows and doors: YES
-- TV size approximately ${tvSize} inch: YES
-- Decorative niche count exactly ${nicheCount}: YES
+- Same windows: YES
+- Same doors: YES
+- TV approximately ${tvSize} inch: YES
+- Decorative niches exactly ${nicheCount}: YES
+- Niche position followed: YES
+- Niche shape followed: YES
+- Wood requirement followed: YES
+- Wood placement followed: YES
+- Lighting requirement followed: YES
+- Lighting color followed: YES
 - Fireplace requirement followed: YES
-- TV cabinet requirement followed: YES
+- Cabinet requirement followed: YES
+- Layout requirement followed: YES
 - Physically buildable: YES
 - Photorealistic: YES
 
 The customer should think:
 
-"This is my actual room, with a Cinewall that Solutionbouw could really build."
+"This is my actual room with the exact Cinewall
+configuration I asked Wallmade to build."
 `;
+
+    /* =====================================================
+       OPENAI IMAGE EDIT
+    ===================================================== */
 
     const result = await openai.images.edit({
       model: "gpt-image-2",
@@ -486,26 +1209,120 @@ The customer should think:
       quality: "medium",
     });
 
-    const generatedImage = result.data?.[0]?.b64_json;
+    const generatedImage =
+      result.data?.[0]?.b64_json;
 
     if (!generatedImage) {
-      throw new Error("Geen afbeelding gegenereerd.");
+      throw new Error(
+        "Geen afbeelding gegenereerd."
+      );
     }
 
     return Response.json({
       success: true,
       image: `data:image/png;base64,${generatedImage}`,
+      design: {
+        style,
+        cinewallWidth,
+        layoutAlignment,
+        symmetry,
+        heightStyle,
+
+        tvSize,
+        tvStyle,
+        tvPosition,
+        tvEmphasis,
+
+        fireplace:
+          hasFireplace ? "Ja" : "Nee",
+        fireplaceModel,
+        fireplaceWidth,
+        fireplacePosition,
+        fireplaceFinish,
+
+        shelves: String(nicheCount),
+        shelfPosition,
+        shelfShape,
+        shelfDepth,
+        shelfType,
+
+        woodEnabled:
+          hasWood ? "Ja" : "Nee",
+        woodType: resolvedWood,
+        woodPosition,
+        woodStyle,
+
+        lightingEnabled:
+          hasLighting ? "Ja" : "Nee",
+        lightingColor,
+        lightingStrength,
+        lightingPosition,
+
+        cabinetType:
+          hasCabinet
+            ? resolvedCabinetType
+            : "None",
+        cabinetWidth,
+        cabinetColor,
+        cabinetFinish,
+
+        wallColor,
+        finishStyle,
+        contrast,
+      },
     });
-  } catch (error) {
-    console.error("Cinewall AI error:", error);
+  } catch (error: unknown) {
+    console.error(
+      "Wallmade Cinewall AI error:",
+      error
+    );
+
+    let status = 500;
+
+    let message =
+      "Het AI-ontwerp kon niet worden gegenereerd.";
+
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "status" in error &&
+      typeof (error as { status?: unknown }).status ===
+        "number"
+    ) {
+      status = (
+        error as {
+          status: number;
+        }
+      ).status;
+    }
+
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "message" in error &&
+      typeof (
+        error as {
+          message?: unknown;
+        }
+      ).message === "string"
+    ) {
+      console.error(
+        "OpenAI error message:",
+        (
+          error as {
+            message: string;
+          }
+        ).message
+      );
+    }
 
     return Response.json(
       {
         success: false,
-        error: "Het AI-ontwerp kon niet worden gegenereerd.",
+        error: message,
       },
       {
-        status: 500,
+        status,
       }
     );
   }
