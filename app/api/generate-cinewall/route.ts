@@ -1,5 +1,5 @@
 import OpenAI, { toFile } from "openai";
-import sharp from "sharp";
+
 
 export const runtime = "nodejs";
 
@@ -503,66 +503,22 @@ export async function POST(request: Request) {
        NORMALIZE IMAGE
     ===================================================== */
 
-    const originalBytes = Buffer.from(
-      await image.arrayBuffer()
-    );
 
-    let normalizedImage: Buffer;
+const imageBytes = Buffer.from(await image.arrayBuffer());
 
-    try {
-      normalizedImage = await sharp(originalBytes, {
-        failOn: "error",
-      })
-        .rotate()
-        .resize({
-          width: 2048,
-          height: 2048,
-          fit: "inside",
-          withoutEnlargement: true,
-        })
-        .flatten({
-          background: {
-            r: 255,
-            g: 255,
-            b: 255,
-          },
-        })
-        .png({
-          compressionLevel: 6,
-        })
-        .toBuffer();
-    } catch (imageError) {
-      console.error(
-        "Image normalization error:",
-        imageError
-      );
+console.log("Wallmade image:", {
+  originalName: image.name,
+  originalType: image.type,
+  originalSize: image.size,
+});
 
-      return Response.json(
-        {
-          success: false,
-          error:
-            "De afbeelding kon niet worden verwerkt. Probeer een andere JPG- of PNG-afbeelding.",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    console.log("Wallmade image:", {
-      originalName: image.name,
-      originalType: image.type,
-      originalSize: image.size,
-      normalizedSize: normalizedImage.length,
-    });
-
-    const uploadedImage = await toFile(
-      normalizedImage,
-      "wallmade-room.png",
-      {
-        type: "image/png",
-      }
-    );
+const uploadedImage = await toFile(
+  imageBytes,
+  image.name || "wallmade-room.jpg",
+  {
+    type: image.type || "image/jpeg",
+  }
+);
 
     /* =====================================================
        DERIVED CONFIGURATION
