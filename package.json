@@ -26,5 +26,9 @@
   },
   "optionalDependencies": {
     "sharp": "^0.35.4"
+  },
+  "allowScripts": {
+    "sharp@0.34.5": true,
+    "sharp@0.35.4": true
   }
 }
