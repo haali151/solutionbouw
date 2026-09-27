@@ -399,48 +399,96 @@ function languageLabel(value: Language) {
    PAGE
 ========================================================= */
 async function normalizeImageForUpload(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file);
+  const objectUrl = URL.createObjectURL(file);
 
-  const maxSize = 2048;
-  const scale = Math.min(
-    1,
-    maxSize / Math.max(bitmap.width, bitmap.height)
-  );
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error("Could not read image."));
+      img.src = objectUrl;
+    });
 
-  const width = Math.round(bitmap.width * scale);
-  const height = Math.round(bitmap.height * scale);
+    const sourceWidth = image.naturalWidth || image.width;
+    const sourceHeight = image.naturalHeight || image.height;
 
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
+    if (!sourceWidth || !sourceHeight) {
+      throw new Error("Could not read image dimensions.");
+    }
 
-  const ctx = canvas.getContext("2d");
-
-  if (!ctx) {
-    bitmap.close();
-    throw new Error("Could not process image.");
-  }
-
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, width, height);
-  ctx.drawImage(bitmap, 0, 0, width, height);
-
-  bitmap.close();
-
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (result) => {
-        if (result) resolve(result);
-        else reject(new Error("Could not convert image."));
-      },
-      "image/png"
+    // Keep the upload comfortably below serverless request limits.
+    // 1600px is still plenty for the AI while being much lighter than
+    // a full-resolution iPhone photo.
+    const maxDimension = 1600;
+    const initialScale = Math.min(
+      1,
+      maxDimension / Math.max(sourceWidth, sourceHeight)
     );
-  });
 
-  return new File([blob], "wallmade-room.png", {
-    type: "image/png",
-  });
+    let width = Math.max(1, Math.round(sourceWidth * initialScale));
+    let height = Math.max(1, Math.round(sourceHeight * initialScale));
+
+    const targetBytes = 1.5 * 1024 * 1024;
+    const qualities = [0.82, 0.74, 0.66, 0.58, 0.5];
+    let lastBlob: Blob | null = null;
+
+    for (let attempt = 0; attempt < qualities.length; attempt += 1) {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d", { alpha: false });
+
+      if (!ctx) {
+        throw new Error("Could not process image.");
+      }
+
+      // JPEG has no transparency, so give transparent PNG/WebP photos
+      // a clean white background instead of black pixels.
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(image, 0, 0, width, height);
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (result) => {
+            if (result) resolve(result);
+            else reject(new Error("Could not convert image."));
+          },
+          "image/jpeg",
+          qualities[attempt]
+        );
+      });
+
+      lastBlob = blob;
+
+      if (blob.size <= targetBytes) {
+        return new File([blob], "wallmade-room.jpg", {
+          type: "image/jpeg",
+          lastModified: Date.now(),
+        });
+      }
+
+      // If compression alone is not enough, also reduce dimensions for
+      // the next attempt. This makes large iPhone photos safe on Vercel.
+      width = Math.max(1, Math.round(width * 0.86));
+      height = Math.max(1, Math.round(height * 0.86));
+    }
+
+    if (!lastBlob) {
+      throw new Error("Could not convert image.");
+    }
+
+    return new File([lastBlob], "wallmade-room.jpg", {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }
+
 export default function AIDesigner() {
   const [config, setConfig] = useState(initialConfig);
 
