@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
+import Link from "next/link";
 const heroImages = [
   "/hero-cinewall.png",
   "/cinewall-1.jpg",
@@ -295,13 +295,13 @@ export default function Home() {
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <a
+                <Link
                   href="/ai-designer"
                   className="group flex items-center justify-between rounded-full bg-[#B97848] px-7 py-5 text-base font-medium text-white transition hover:bg-[#C78959] sm:min-w-[260px]"
                 >
                   Ontwerp met AI
                   <span>→</span>
-                </a>
+                </Link>
 
                 <a
                   href="#projecten"
@@ -395,7 +395,7 @@ export default function Home() {
               ["Wandpanelen", "/wandpanelen"],
               ["AI Designer", "/ai-designer"],
             ].map(([name, href], index) => (
-              <a
+              <Link
                 key={href}
                 href={href}
                 className={`group flex min-w-[240px] items-center justify-between rounded-[26px] border px-5 py-6 transition duration-300 lg:min-w-0 ${
@@ -419,7 +419,7 @@ export default function Home() {
                 <span className="text-xl transition group-hover:translate-x-1">
                   →
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -465,13 +465,13 @@ export default function Home() {
                 )}
               </div>
 
-              <a
+              <Link
                 href="/ai-designer"
                 className="group mt-9 flex w-full max-w-md items-center justify-between rounded-full bg-[#B97848] px-7 py-5 font-medium text-white transition hover:bg-[#C78959]"
               >
                 Probeer AI Designer
                 <span>→</span>
-              </a>
+              </Link>
             </div>
 
             <div className="relative min-h-[480px] overflow-hidden lg:min-h-[620px]">
@@ -498,12 +498,12 @@ export default function Home() {
                     Ontdek eerst wat bij jouw ruimte past.
                   </p>
 
-                  <a
+                  <Link
                     href="/ai-designer"
                     className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#B97848]"
                   >
                     →
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -767,13 +767,13 @@ export default function Home() {
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
+                <Link
                   href="/ai-designer"
                   className="flex items-center justify-between rounded-full bg-[#B97848] px-7 py-5 font-medium"
                 >
                   Ontwerp met AI
                   <span>→</span>
-                </a>
+                </Link>
 
                 <a
                   href="/cinewall-configurator"
@@ -858,21 +858,21 @@ export default function Home() {
             bottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
           }}
         >
-          <a
+          <Link
             href="/ai-designer"
             className="flex flex-1 items-center justify-center rounded-full bg-[#B97848] px-3 py-3.5 text-sm font-medium text-white"
           >
             Ontwerp met AI
-          </a>
-<a
-  href="/cinewall-configurator"
-  className="flex min-w-0 flex-1 items-center justify-center rounded-full bg-[#1D1D1B] px-2 py-3.5 text-center text-[13px] font-medium text-white"
-  style={{ color: "#ffffff" }}
+          </Link>
+          <Link
+            href="/cinewall-configurator"
+            className="flex min-w-0 flex-1 items-center justify-center rounded-full bg-[#1D1D1B] px-2 py-3.5 text-center text-[13px] font-medium text-white"
+            style={{ color: "#ffffff" }}
 >
   <span className="block whitespace-nowrap text-white">
     Bereken prijs
   </span>
-</a>
+</Link>
           
           
         </div>
@@ -951,23 +951,23 @@ export default function Home() {
               ["Wandpanelen", "/wandpanelen"],
               ["Contact", "#contact"],
             ].map(([name, href]) => (
-              <a
+              <Link
                 key={name}
                 href={href}
                 onClick={() => setMenuOpen(false)}
                 className="border-b border-white/10 py-4 text-2xl font-light"
               >
                 {name}
-              </a>
+              </Link>
             ))}
           </nav>
 
-          <a
+          <Link
             href="/ai-designer"
             className="mt-6 flex items-center justify-between rounded-full bg-[#B97848] px-6 py-4"
           >
             Ontwerp met AI <span>→</span>
-          </a>
+          </Link>
         </div>
       </dialog>
     </main>
