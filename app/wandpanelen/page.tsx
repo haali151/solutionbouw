@@ -1,773 +1,405 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { wandpanelenCatalog } from "../DATA/wandpanelen-catalog";
+import { hexagonCatalog } from "../DATA/hexagon-catalog";
+import { suedeCatalog } from "../DATA/suede-catalog";
+import { decorCatalog } from "../DATA/decor-catalog";
 
-import {
-  wandpanelenCatalog,
-} from "../DATA/wandpanelen-catalog";
+type Category = "all" | "wood" | "hexagon" | "suede" | "decor";
+type SortOption = "featured" | "price-low" | "price-high" | "name";
 
-import {
-  hexagonCatalog,
-} from "../DATA/hexagon-catalog";
-
-import {
-  suedeCatalog,
-} from "../DATA/suede-catalog";
-
-import {
-  decorCatalog,
-} from "../DATA/decor-catalog";
-
-type Category =
-  | "all"
-  | "wood"
-  | "hexagon"
-  | "suede"
-  | "decor";
-
-type SortOption =
-  | "featured"
-  | "price-low"
-  | "price-high"
-  | "name";
-
-const allWandpanelen = [
+const allProducts = [
   ...wandpanelenCatalog,
   ...hexagonCatalog,
   ...suedeCatalog,
   ...decorCatalog,
 ];
 
-function getProductCategory(product: any): Category {
-  if (
-    decorCatalog.some(
-      (item) => item.id === product.id
-    )
-  ) {
-    return "decor";
-  }
-
-  if (
-    suedeCatalog.some(
-      (item) => item.id === product.id
-    )
-  ) {
-    return "suede";
-  }
-
-  if (
-    hexagonCatalog.some(
-      (item) => item.id === product.id
-    )
-  ) {
-    return "hexagon";
-  }
-
+function getCategory(product: any): Category {
+  if (decorCatalog.some((item) => item.id === product.id)) return "decor";
+  if (suedeCatalog.some((item) => item.id === product.id)) return "suede";
+  if (hexagonCatalog.some((item) => item.id === product.id)) return "hexagon";
   return "wood";
 }
 
-function getProductUrl(product: any) {
-  const category =
-    getProductCategory(product);
-
-  if (category === "hexagon") {
-    return `/wandpanelen/hexagon/${product.slug}`;
-  }
-
-  if (category === "suede") {
-    return `/wandpanelen/suede/${product.slug}`;
-  }
-
-  if (category === "decor") {
-    return `/wandpanelen/decor/${product.slug}`;
-  }
-
+function productUrl(product: any) {
+  const category = getCategory(product);
+  if (category === "hexagon") return `/wandpanelen/hexagon/${product.slug}`;
+  if (category === "suede") return `/wandpanelen/suede/${product.slug}`;
+  if (category === "decor") return `/wandpanelen/decor/${product.slug}`;
   return `/wandpanelen/${product.slug}`;
 }
 
-function getCategoryLabel(
-  category: Category
-) {
-  if (category === "wood") {
-    return "Houten wandpaneel";
-  }
-
-  if (category === "hexagon") {
-    return "Hexagon";
-  }
-
-  if (category === "suede") {
-    return "Suède";
-  }
-
-  if (category === "decor") {
-    return "Decor";
-  }
-
-  return "Wandpaneel";
+function categoryLabel(category: Category) {
+  if (category === "wood") return "Hout";
+  if (category === "hexagon") return "Hexagon";
+  if (category === "suede") return "Suède";
+  if (category === "decor") return "Decor";
+  return "Alles";
 }
 
-function formatPrice(
-  price: number | null
-) {
-  if (price === null) {
-    return "Prijs op aanvraag";
-  }
-
-  return new Intl.NumberFormat(
-    "nl-NL",
-    {
-      style: "currency",
-      currency: "EUR",
-    }
-  ).format(price);
+function formatPrice(price: number | null) {
+  if (price === null) return "Prijs op aanvraag";
+  return new Intl.NumberFormat("nl-NL", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price);
 }
+
+function displayName(name: string) {
+  return name
+    .replace(/akoestische wandpanelen?\s*[-–]\s*/i, "")
+    .replace(/akoestisch wandpaneel\s*[-–]\s*/i, "")
+    .replace(/wandpanelen?\s*[-–]\s*/i, "")
+    .replace(/\s*[-–]\s*280\s*x\s*60\s*cm/gi, "")
+    .replace(/\s*[-–]\s*300\s*x\s*60\s*cm/gi, "")
+    .replace(/\s*[-–]\s*260\s*x\s*60\s*cm/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function bestImage(product: any) {
+  return product.images?.[1] || product.images?.[0] || null;
+}
+
+const collections = [
+  {
+    key: "wood" as Category,
+    title: "Hout",
+    sub: "Akoestische latten",
+    image: wandpanelenCatalog[0]?.images?.[1] || wandpanelenCatalog[0]?.images?.[0],
+  },
+  {
+    key: "hexagon" as Category,
+    title: "Hexagon",
+    sub: "Grafische panelen",
+    image: hexagonCatalog[0]?.images?.[1] || hexagonCatalog[0]?.images?.[0],
+  },
+  {
+    key: "suede" as Category,
+    title: "Suède",
+    sub: "Zachte texturen",
+    image: suedeCatalog[0]?.images?.[1] || suedeCatalog[0]?.images?.[0],
+  },
+  {
+    key: "decor" as Category,
+    title: "Decor",
+    sub: "Statement walls",
+    image: decorCatalog[0]?.images?.[1] || decorCatalog[0]?.images?.[0],
+  },
+];
 
 export default function WandpanelenPage() {
-  const [category, setCategory] =
-    useState<Category>("all");
+  const [category, setCategory] = useState<Category>("all");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortOption>("featured");
+  const [visible, setVisible] = useState(12);
 
-  const [search, setSearch] =
-    useState("");
+  const products = useMemo(() => {
+    let list = [...allProducts];
 
-  const [sort, setSort] =
-    useState<SortOption>("featured");
+    if (category !== "all") {
+      list = list.filter((product) => getCategory(product) === category);
+    }
 
-  const filteredProducts =
-    useMemo(() => {
-      let products =
-        [...allWandpanelen];
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      list = list.filter((product) =>
+        `${product.name} ${product.brand}`.toLowerCase().includes(q)
+      );
+    }
 
-      if (category !== "all") {
-        products =
-          products.filter(
-            (product) =>
-              getProductCategory(
-                product
-              ) === category
-          );
-      }
+    if (sort === "price-low") {
+      list.sort(
+        (a, b) =>
+          (a.price ?? Number.MAX_SAFE_INTEGER) -
+          (b.price ?? Number.MAX_SAFE_INTEGER)
+      );
+    }
 
-      if (search.trim()) {
-        const searchValue =
-          search
-            .trim()
-            .toLowerCase();
+    if (sort === "price-high") {
+      list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    }
 
-        products =
-          products.filter(
-            (product) =>
-              product.name
-                .toLowerCase()
-                .includes(
-                  searchValue
-                ) ||
-              product.brand
-                .toLowerCase()
-                .includes(
-                  searchValue
-                )
-          );
-      }
+    if (sort === "name") {
+      list.sort((a, b) => a.name.localeCompare(b.name, "nl"));
+    }
 
-      if (sort === "price-low") {
-        products.sort(
-          (a, b) =>
-            (a.price ??
-              Number.MAX_SAFE_INTEGER) -
-            (b.price ??
-              Number.MAX_SAFE_INTEGER)
-        );
-      }
+    return list;
+  }, [category, search, sort]);
 
-      if (sort === "price-high") {
-        products.sort(
-          (a, b) =>
-            (b.price ?? 0) -
-            (a.price ?? 0)
-        );
-      }
-
-      if (sort === "name") {
-        products.sort((a, b) =>
-          a.name.localeCompare(
-            b.name,
-            "nl"
-          )
-        );
-      }
-
-      return products;
-    }, [
-      category,
-      search,
-      sort,
-    ]);
+  function selectCategory(value: Category) {
+    setCategory(value);
+    setVisible(12);
+  }
 
   return (
-    <main className="min-h-screen bg-black text-white">
-
-      {/* HEADER */}
-      <header className="border-b border-white/10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-6">
-
-          <a
-            href="/"
-            className="text-sm font-medium uppercase tracking-[0.25em]"
-          >
-            Solutionbouw
+    <main className="min-h-screen bg-[#f3efe8] text-[#181714]">
+      {/* TOP */}
+      <header className="sticky top-0 z-50 border-b border-black/10 bg-[#f3efe8]/95 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 sm:px-8 lg:px-12">
+          <a href="/" className="text-base font-semibold tracking-[0.22em]">
+            WALLMADE
           </a>
 
           <a
             href="/"
-            className="text-sm text-neutral-400 transition hover:text-white"
+            className="rounded-full border border-black/15 px-4 py-2 text-xs font-medium"
           >
-            ← Home
+            Home
           </a>
-
         </div>
       </header>
 
-      {/* HERO */}
-      <section className="border-b border-white/10">
+      {/* COLLECTIONS 2x2 ON MOBILE */}
+      <section className="px-5 pb-8 pt-8 sm:px-8 sm:pt-10 lg:px-12 lg:pb-12 lg:pt-14">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {collections.map((item) => (
+              <button
+                type="button"
+                key={item.key}
+                onClick={() => selectCategory(item.key)}
+                className={`group relative aspect-[1.1/1] overflow-hidden rounded-[22px] text-left ${
+                  category === item.key
+                    ? "ring-2 ring-[#9f704f] ring-offset-2 ring-offset-[#f3efe8]"
+                    : ""
+                }`}
+              >
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-[#d7cec2]" />
+                )}
 
-        <div className="mx-auto max-w-7xl px-5 py-14 sm:px-6 lg:py-20">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent" />
 
-          <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">
-            Solutionbouw collectie
-          </p>
-
-          <h1 className="mt-4 max-w-4xl text-4xl font-light leading-tight sm:text-5xl lg:text-6xl">
-            Wandpanelen voor een
-            compleet interieur
-          </h1>
-
-          <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-400 sm:text-lg">
-            Ontdek houten,
-            Hexagon, Suède en
-            Decor wandpanelen voor
-            woonkamers, slaapkamers,
-            kantoren en Cinewalls.
-          </p>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-
-            <span className="rounded-full border border-white/10 px-4 py-2 text-sm text-neutral-400">
-              {allWandpanelen.length} producten
-            </span>
-
-            <span className="rounded-full border border-white/10 px-4 py-2 text-sm text-neutral-400">
-              4 collecties
-            </span>
-
+                <div className="absolute inset-x-0 bottom-0 p-4 text-white sm:p-5">
+                  <p className="text-[9px] uppercase tracking-[0.2em] text-white/50">
+                    {item.sub}
+                  </p>
+                  <div className="mt-1 flex items-center justify-between">
+                    <h2 className="text-xl font-light sm:text-2xl">{item.title}</h2>
+                    <span className="text-lg">→</span>
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
-        </div>
-      </section>
-
-      {/* COLLECTIONS */}
-      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-6">
-
-        <div className="mb-7">
-          <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-            Collecties
-          </p>
-
-          <h2 className="mt-3 text-2xl font-medium">
-            Kies jouw stijl
-          </h2>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-
-          {/* WOOD */}
-          <button
-            type="button"
-            onClick={() =>
-              setCategory("wood")
-            }
-            className={`overflow-hidden rounded-3xl border text-left transition ${
-              category === "wood"
-                ? "border-white bg-white/[0.08]"
-                : "border-white/10 bg-white/[0.03] hover:border-white/30"
-            }`}
-          >
-
-            <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
-
-              {wandpanelenCatalog[0]
-                ?.images[0] && (
-                <img
-                  src={
-                    wandpanelenCatalog[0]
-                      .images[0]
-                  }
-                  alt="Houten wandpanelen"
-                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                />
-              )}
-
-            </div>
-
-            <div className="p-5">
-
-              <p className="text-lg font-medium">
-                Houten wandpanelen
-              </p>
-
-              <p className="mt-2 text-sm text-neutral-500">
-                Bekijk{" "}
-                {
-                  wandpanelenCatalog.length
-                }{" "}
-                producten
-              </p>
-
-            </div>
-          </button>
-
-          {/* HEXAGON */}
-          <button
-            type="button"
-            onClick={() =>
-              setCategory("hexagon")
-            }
-            className={`overflow-hidden rounded-3xl border text-left transition ${
-              category === "hexagon"
-                ? "border-white bg-white/[0.08]"
-                : "border-white/10 bg-white/[0.03] hover:border-white/30"
-            }`}
-          >
-
-            <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
-
-              {hexagonCatalog[0]
-                ?.images[0] && (
-                <img
-                  src={
-                    hexagonCatalog[0]
-                      .images[0]
-                  }
-                  alt="Hexagon wandpanelen"
-                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                />
-              )}
-
-            </div>
-
-            <div className="p-5">
-
-              <p className="text-lg font-medium">
-                Hexagon wandpanelen
-              </p>
-
-              <p className="mt-2 text-sm text-neutral-500">
-                Bekijk{" "}
-                {
-                  hexagonCatalog.length
-                }{" "}
-                producten
-              </p>
-
-            </div>
-          </button>
-
-          {/* SUEDE */}
-          <button
-            type="button"
-            onClick={() =>
-              setCategory("suede")
-            }
-            className={`overflow-hidden rounded-3xl border text-left transition ${
-              category === "suede"
-                ? "border-white bg-white/[0.08]"
-                : "border-white/10 bg-white/[0.03] hover:border-white/30"
-            }`}
-          >
-
-            <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
-
-              {suedeCatalog[0]
-                ?.images[0] && (
-                <img
-                  src={
-                    suedeCatalog[0]
-                      .images[0]
-                  }
-                  alt="Suède wandpanelen"
-                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                />
-              )}
-
-            </div>
-
-            <div className="p-5">
-
-              <p className="text-lg font-medium">
-                Suède wandpanelen
-              </p>
-
-              <p className="mt-2 text-sm text-neutral-500">
-                Bekijk{" "}
-                {
-                  suedeCatalog.length
-                }{" "}
-                producten
-              </p>
-
-            </div>
-          </button>
-
-          {/* DECOR */}
-          <button
-            type="button"
-            onClick={() =>
-              setCategory("decor")
-            }
-            className={`overflow-hidden rounded-3xl border text-left transition ${
-              category === "decor"
-                ? "border-white bg-white/[0.08]"
-                : "border-white/10 bg-white/[0.03] hover:border-white/30"
-            }`}
-          >
-
-            <div className="aspect-[4/3] overflow-hidden bg-neutral-900">
-
-              {decorCatalog[0]
-                ?.images[0] && (
-                <img
-                  src={
-                    decorCatalog[0]
-                      .images[0]
-                  }
-                  alt="Decor wandpanelen"
-                  className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                />
-              )}
-
-            </div>
-
-            <div className="p-5">
-
-              <p className="text-lg font-medium">
-                Decor wandpanelen
-              </p>
-
-              <p className="mt-2 text-sm text-neutral-500">
-                Bekijk{" "}
-                {decorCatalog.length}{" "}
-                producten
-              </p>
-
-            </div>
-          </button>
-
         </div>
       </section>
 
       {/* FILTERS */}
-      <section className="border-y border-white/10">
-
-        <div className="mx-auto max-w-7xl px-5 py-6 sm:px-6">
-
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-
-            <div className="flex flex-wrap gap-2">
-
-              {[
-                {
-                  key: "all",
-                  label: "Alles",
-                },
-                {
-                  key: "wood",
-                  label: "Hout",
-                },
-                {
-                  key: "hexagon",
-                  label: "Hexagon",
-                },
-                {
-                  key: "suede",
-                  label: "Suède",
-                },
-                {
-                  key: "decor",
-                  label: "Decor",
-                },
-              ].map((item) => (
+      <section className="px-5 pb-8 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {(["all", "wood", "hexagon", "suede", "decor"] as Category[]).map(
+              (item) => (
                 <button
-                  key={item.key}
+                  key={item}
                   type="button"
-                  onClick={() =>
-                    setCategory(
-                      item.key as Category
-                    )
-                  }
-                  className={`rounded-full px-4 py-2 text-sm transition ${
-                    category ===
-                    item.key
-                      ? "bg-white text-black"
-                      : "border border-white/10 text-neutral-400 hover:border-white/30 hover:text-white"
+                  onClick={() => selectCategory(item)}
+                  className={`shrink-0 rounded-full px-4 py-2.5 text-xs font-medium ${
+                    category === item
+                      ? "bg-[#181714] !text-white"
+                      : "border border-black/10 bg-white/55 text-black/55"
                   }`}
+                  style={
+                    category === item
+                      ? { color: "#fff", WebkitTextFillColor: "#fff" }
+                      : undefined
+                  }
                 >
-                  {item.label}
+                  {categoryLabel(item)}
                 </button>
-              ))}
-
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-
-              <input
-                type="text"
-                value={search}
-                onChange={(event) =>
-                  setSearch(
-                    event.target.value
-                  )
-                }
-                placeholder="Zoek wandpanelen..."
-                className="rounded-full border border-white/10 bg-white/[0.03] px-5 py-3 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-white/40"
-              />
-
-              <select
-                value={sort}
-                onChange={(event) =>
-                  setSort(
-                    event.target
-                      .value as SortOption
-                  )
-                }
-                className="rounded-full border border-white/10 bg-black px-5 py-3 text-sm text-white outline-none"
-              >
-                <option value="featured">
-                  Aanbevolen
-                </option>
-
-                <option value="price-low">
-                  Prijs laag - hoog
-                </option>
-
-                <option value="price-high">
-                  Prijs hoog - laag
-                </option>
-
-                <option value="name">
-                  Naam A-Z
-                </option>
-
-              </select>
-
-            </div>
+              )
+            )}
           </div>
 
+          <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_220px]">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setVisible(12);
+              }}
+              placeholder="Zoek kleur, materiaal of model..."
+              className="rounded-2xl border border-black/10 bg-white/60 px-5 py-4 text-sm outline-none placeholder:text-black/35 focus:border-black/25"
+            />
+
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortOption)}
+              className="rounded-2xl border border-black/10 bg-white/60 px-5 py-4 text-sm outline-none"
+            >
+              <option value="featured">Aanbevolen</option>
+              <option value="price-low">Prijs laag - hoog</option>
+              <option value="price-high">Prijs hoog - laag</option>
+              <option value="name">Naam A-Z</option>
+            </select>
+          </div>
         </div>
       </section>
 
       {/* PRODUCTS */}
-      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:py-16">
-
-        <div className="mb-8 flex items-end justify-between gap-5">
-
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-              Wandpanelen
-            </p>
-
-            <h2 className="mt-2 text-2xl font-medium">
-              {filteredProducts.length}{" "}
-              producten
-            </h2>
+      <section className="px-5 pb-24 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1500px]">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[#9c6a47]">
+                {category === "all" ? "Collectie" : categoryLabel(category)}
+              </p>
+              <h2 className="mt-2 text-3xl font-light tracking-[-0.035em]">
+                {products.length} producten
+              </h2>
+            </div>
           </div>
 
-          {category !== "all" && (
-            <button
-              type="button"
-              onClick={() =>
-                setCategory("all")
-              }
-              className="text-sm text-neutral-400 transition hover:text-white"
-            >
-              Toon alles
-            </button>
-          )}
+          {products.length === 0 ? (
+            <div className="rounded-[28px] bg-white/65 px-6 py-20 text-center">
+              <h3 className="text-2xl font-light">Geen producten gevonden</h3>
+              <p className="mt-2 text-sm text-black/45">
+                Probeer een andere zoekterm of collectie.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-7 sm:gap-x-5 md:grid-cols-3 xl:grid-cols-4">
+                {products.slice(0, visible).map((product) => {
+                  const category = getCategory(product);
+                  const image = bestImage(product);
+                  const hasDiscount =
+                    product.oldPrice !== null &&
+                    product.price !== null &&
+                    product.oldPrice > product.price;
 
-        </div>
-
-        {filteredProducts.length ===
-        0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/[0.02] px-6 py-20 text-center">
-
-            <p className="text-xl">
-              Geen producten gevonden
-            </p>
-
-            <p className="mt-2 text-sm text-neutral-500">
-              Probeer een andere
-              zoekterm of categorie.
-            </p>
-
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-
-            {filteredProducts.map(
-              (product) => {
-                const productUrl =
-                  getProductUrl(
-                    product
-                  );
-
-                const productCategory =
-                  getProductCategory(
-                    product
-                  );
-
-                const hasDiscount =
-                  product.oldPrice !==
-                    null &&
-                  product.price !==
-                    null &&
-                  product.oldPrice >
-                    product.price;
-
-                return (
-                  <article
-                    key={`${productCategory}-${product.id}`}
-                    className="group overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02]"
-                  >
-
+                  return (
                     <a
-                      href={
-                        productUrl
-                      }
-                      className="relative block aspect-[4/5] overflow-hidden bg-[#0d0d0d]"
+                      key={`${category}-${product.id}`}
+                      href={productUrl(product)}
+                      className="group block min-w-0"
                     >
-
-                      {product
-                        .images[0] ? (
-                        <img
-                          src={
-                            product
-                              .images[0]
-                          }
-                          alt={
-                            product.name
-                          }
-                          loading="lazy"
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-xs text-neutral-600">
-                          Geen afbeelding
-                        </div>
-                      )}
-
-                      <span className="absolute left-3 top-3 rounded-full bg-black/75 px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] backdrop-blur-md">
-                        {getCategoryLabel(
-                          productCategory
+                      <div className="relative aspect-square overflow-hidden rounded-[22px] bg-[#ded7ce]">
+                        {image ? (
+                          <img
+                            src={image}
+                            alt={product.name}
+                            loading="lazy"
+                            className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.035]"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-xs text-black/25">
+                            Geen afbeelding
+                          </div>
                         )}
-                      </span>
 
-                      {hasDiscount && (
-                        <span className="absolute right-3 top-3 rounded-full bg-white px-3 py-1.5 text-[10px] font-medium text-black">
-                          Aanbieding
-                        </span>
-                      )}
-
-                    </a>
-
-                    <div className="p-4 sm:p-5">
-
-                      <p className="text-[10px] uppercase tracking-[0.2em] text-neutral-600 sm:text-xs">
-                        {product.brand}
-                      </p>
-
-                      <a
-                        href={
-                          productUrl
-                        }
-                        className="mt-2 block"
-                      >
-                        <h3 className="line-clamp-2 text-sm font-medium leading-5 transition group-hover:text-neutral-300 sm:text-base sm:leading-6">
-                          {product.name}
-                        </h3>
-                      </a>
-
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-
-                        <span className="font-medium">
-                          {formatPrice(
-                            product.price
-                          )}
+                        <span
+                          className="absolute left-2 top-2 rounded-full bg-black/65 px-2.5 py-1.5 text-[8px] font-medium uppercase tracking-[0.14em] !text-white backdrop-blur"
+                          style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
+                        >
+                          {categoryLabel(category)}
                         </span>
 
                         {hasDiscount && (
-                          <span className="text-xs text-neutral-600 line-through">
-                            {formatPrice(
-                              product.oldPrice
-                            )}
+                          <span className="absolute right-2 top-2 rounded-full bg-[#f3efe8] px-2.5 py-1.5 text-[8px] font-semibold">
+                            Sale
                           </span>
                         )}
-
                       </div>
 
-                      <a
-                        href={
-                          productUrl
-                        }
-                        className="mt-5 inline-flex items-center text-sm text-neutral-400 transition hover:text-white"
-                      >
-                        Bekijk product →
-                      </a>
+                      <div className="pt-3">
+                        <h3
+                          className="min-h-[2.6rem] text-[14px] font-medium leading-[1.35] tracking-[-0.015em] sm:text-base"
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {displayName(product.name)}
+                        </h3>
 
-                    </div>
+                        <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                          <span className="text-[15px] font-semibold">
+                            {formatPrice(product.price)}
+                          </span>
 
-                  </article>
-                );
-              }
-            )}
+                          {hasDiscount && (
+                            <span className="text-[11px] text-black/30 line-through">
+                              {formatPrice(product.oldPrice)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
 
-          </div>
-        )}
-
-      </section>
-
-      {/* CTA */}
-      <section className="border-t border-white/10">
-
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6">
-
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] px-6 py-12 text-center sm:px-10">
-
-            <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-              Solutionbouw
-            </p>
-
-            <h2 className="mx-auto mt-4 max-w-2xl text-3xl font-light sm:text-4xl">
-              Combineer wandpanelen
-              met jouw Cinewall
-            </h2>
-
-            <p className="mx-auto mt-5 max-w-xl leading-7 text-neutral-400">
-              Stel een Cinewall samen
-              en combineer verschillende
-              materialen en wandpanelen
-              in één ontwerp.
-            </p>
-
-            <a
-              href="/cinewall-configurator"
-              className="mt-8 inline-flex rounded-full bg-white px-7 py-4 font-medium text-black transition hover:bg-neutral-200"
-            >
-              Cinewall samenstellen
-            </a>
-
-          </div>
-
+              {visible < products.length && (
+                <div className="mt-14 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setVisible((count) => count + 12)}
+                    className="rounded-full bg-[#181714] px-7 py-4 text-sm font-semibold !text-white"
+                    style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
+                  >
+                    Meer bekijken
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
 
+      {/* SIMPLE CTA */}
+      <section className="px-5 pb-24 sm:px-8 lg:px-12">
+        <div className="mx-auto max-w-[1500px] rounded-[30px] bg-[#b9a990] p-7 sm:p-12 lg:p-14">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-black/45">
+            Combineer materialen
+          </p>
+          <h2 className="mt-3 max-w-3xl text-3xl font-light tracking-[-0.04em] sm:text-5xl">
+            Bekijk hoe wandpanelen samenkomen met een Cinewall.
+          </h2>
+          <a
+            href="/cinewalls"
+            className="mt-7 inline-flex rounded-full bg-[#181714] px-7 py-4 text-sm font-semibold !text-white"
+            style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
+          >
+            Bekijk Cinewalls →
+          </a>
+        </div>
+      </section>
+
+      {/* MOBILE BOTTOM BAR */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-black/10 bg-[#F3EEE7]/95 px-3 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
+        <div className="mx-auto flex max-w-md gap-2">
+          <a
+            href="/cinewalls"
+            className="flex flex-1 items-center justify-center rounded-full bg-[#181714] px-4 py-3.5 text-center text-sm font-semibold !text-white"
+            style={{ color: "#ffffff", WebkitTextFillColor: "#ffffff" }}
+          >
+            Cinewalls bekijken
+          </a>
+
+          <a
+            href="https://wa.me/31643583800"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-center rounded-full border border-black/15 bg-[#F3EEE7] px-5 py-3.5 text-sm font-semibold"
+          >
+            WhatsApp
+          </a>
+        </div>
+      </div>
     </main>
   );
 }
