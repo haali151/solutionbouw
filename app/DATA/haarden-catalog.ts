@@ -58,8 +58,31 @@ function getExtension(imageUrl: string) {
   return "jpg";
 }
 
+const nonElectricKeywords = [
+  "gashaard",
+  "gaskachel",
+  "houtkachel",
+  "houthaard",
+  "pelletkachel",
+  "pellethaard",
+  "ethanol",
+];
+
+function isElectricFireplace(product: {
+  title?: string | null;
+  slug?: string | null;
+  productType?: string | null;
+}) {
+  return ![product.title, product.slug, product.productType].some((value) => {
+    const text = (value ?? "").toLowerCase().replace(/[\s_-]+/g, "");
+    return nonElectricKeywords.some((keyword) => text.includes(keyword));
+  });
+}
+
 export const haardenCatalog: CatalogHaard[] =
-  catalogData.products.filter((product) => product.price > 0).map((product) => {
+  catalogData.products
+    .filter((product) => product.price > 0 && isElectricFireplace(product))
+    .map((product) => {
     const slug =
       safeName(product.slug || product.title) ||
       `product-${product.id}`;
