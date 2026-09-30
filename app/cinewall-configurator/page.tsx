@@ -1,6 +1,7 @@
-﻿"use client";
+"use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 
 type Fireplace = {
 
@@ -1613,7 +1614,7 @@ export default function CinewallConfigurator() {
 
                     <p className="mt-3 break-words font-medium">
 
-                      {selectedCinewall.name} Â· {width} meter
+                      {selectedCinewall.name} · {width} meter
 
                     </p>
 
@@ -1711,19 +1712,19 @@ export default function CinewallConfigurator() {
 
               </div>
 
-              <a
+              <Link
 
                 href={aiUrl}
 
                 className="mt-6 flex w-full items-center justify-between rounded-full bg-[#C17D49] px-5 py-4"
 
-              >
+               prefetch={true}>
 
                 Bekijk met AI
 
                 <span>→</span>
 
-              </a>
+              </Link>
 
               <button
 
@@ -1775,14 +1776,14 @@ export default function CinewallConfigurator() {
 
           </div>
 
-          <a
+          <Link
   href={aiUrl}
   aria-label="Bekijk met AI"
   className="flex h-12 shrink-0 items-center justify-center gap-1.5 rounded-full border border-black/10 bg-white px-3 text-[10px] font-medium whitespace-nowrap"
->
+ prefetch={true}>
   <span aria-hidden="true">&#10022;</span>
   <span>Bekijk met AI</span>
-</a>
+</Link>
 
           <button
 

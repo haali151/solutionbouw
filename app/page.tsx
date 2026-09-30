@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
@@ -12,18 +12,19 @@ const projectImages = Array.from(
 );
 
 const contactMessage =
-  "Hallo Wallmade, ik ben geÃ¯nteresseerd in een Cinewall of interieur op maat. Ik ontvang graag meer informatie en bespreek graag de mogelijkheden.";
+  "Hallo Wallmade, ik ben geïnteresseerd in een Cinewall of interieur op maat. Ik ontvang graag meer informatie en bespreek graag de mogelijkheden.";
 
 const whatsappUrl = `https://wa.me/31643583800?text=${encodeURIComponent(contactMessage)}`;
 const instagramUrl = "https://www.instagram.com/solutionbouw.nl/";
 const emailUrl = `mailto:solutionbouw.official@gmail.com?subject=${encodeURIComponent(
-  "Wallmade â€“ informatie en offerte"
+  "Wallmade – informatie en offerte"
 )}&body=${encodeURIComponent(contactMessage)}`;
 
 type Channel = "whatsapp" | "instagram" | "email";
 
 const navLinks = [
   ["Projecten", "#projecten"],
+  ["Cinewall Ontwerpen", "/cinewall-ontwerpen"],
   ["Collectie", "#collectie"],
   ["AI Designer", "/ai-designer"],
   ["Prijs berekenen", "/cinewall-configurator"],
@@ -104,6 +105,32 @@ function Brand() {
 }
 
 export default function Home() {
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    window.scrollTo(0, 0);
+
+    return () => {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "auto";
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    window.scrollTo(0, 0);
+
+    return () => {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "auto";
+      }
+    };
+  }, []);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const menuRef = useRef<HTMLDialogElement>(null);
@@ -180,7 +207,7 @@ export default function Home() {
           <div className="mx-auto flex max-w-[1500px] items-start justify-between">
             <a href="#home"><Brand /></a>
             <button type="button" onClick={() => setMenuOpen(true)} aria-label="Menu openen"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-black/20 backdrop-blur-md lg:hidden">
+              className="fixed right-5 top-5 z-[200] flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-[#171513]/90 shadow-[0_10px_35px_rgba(0,0,0,0.35)] backdrop-blur-xl transition hover:scale-105 lg:hidden">
               <span className="flex flex-col gap-[6px]">
                 <span className="block h-px w-5 bg-white" />
                 <span className="block h-px w-5 bg-white" />
@@ -198,7 +225,7 @@ export default function Home() {
                 <span className="block text-[#D39A68]">Onze expertise.</span>
               </h1>
               <p className="mt-3 max-w-[335px] text-[12.5px] leading-[1.5] text-white/80 sm:max-w-xl sm:text-base">
-                Cinewalls, sfeerhaarden, wandpanelen en interieur op maat. Ontwerp, visualiseer en realiseer alles op Ã©Ã©n plek.
+                Cinewalls, sfeerhaarden, wandpanelen en interieur op maat. Ontwerp, visualiseer en realiseer alles op één plek.
               </p>
               <div className="mt-4 grid grid-cols-[1.08fr_0.92fr] gap-2.5 sm:flex">
                 <Link href="/ai-designer"
@@ -286,7 +313,7 @@ export default function Home() {
               Meer dan <span className="text-[#A76C42]">Cinewalls.</span>
             </h2>
             <p className="max-w-md text-sm leading-6 text-black/50">
-              EÃ©n stijl, meerdere mogelijkheden. Combineer maatwerk met sfeerhaarden en wandpanelen voor een compleet interieur.
+              Eén stijl, meerdere mogelijkheden. Combineer maatwerk met sfeerhaarden en wandpanelen voor een compleet interieur.
             </p>
           </div>
 
@@ -323,7 +350,7 @@ export default function Home() {
             <div>
               <SectionEyebrow light>Wallmade AI</SectionEyebrow>
               <h2 className="mt-4 max-w-xl text-[38px] font-light leading-[0.98] tracking-[-0.045em] sm:text-6xl">
-                Zie jouw ruimte <span className="text-[#D39A68]">vÃ³Ã³r</span> we bouwen.
+                Zie jouw ruimte <span className="text-[#D39A68]">vóór</span> we bouwen.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-6 text-white/55 sm:text-base">
                 Upload een foto, kies jouw wensen en ontdek hoe jouw nieuwe interieur eruit kan zien.
@@ -392,7 +419,7 @@ export default function Home() {
                 sizes="(min-width:1024px) 45vw,100vw" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4 rounded-full border border-white/20 bg-black/35 px-4 py-2 text-[10px] text-white backdrop-blur">
-                Maatwerk â€¢ direct samenstellen
+                Maatwerk • direct samenstellen
               </div>
             </div>
           </div>
@@ -439,7 +466,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1500px]">
           <SectionEyebrow>Van idee tot oplevering</SectionEyebrow>
           <h2 className="mt-3 max-w-3xl text-[36px] font-light leading-[1] tracking-[-0.045em] sm:text-6xl">
-            EÃ©n duidelijk proces.
+            Eén duidelijk proces.
           </h2>
 
           <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[22px] bg-black/10 lg:grid-cols-4">
@@ -548,7 +575,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5 text-[10px] text-white/25">
-            <p>Â© 2026 Wallmade</p>
+            <p>© 2026 Wallmade</p>
             <p>Interieur op maat</p>
           </div>
         </div>
@@ -573,30 +600,104 @@ export default function Home() {
           </a>
         </div>
       )}
-
       {/* LIGHTBOX */}
-      <dialog ref={galleryRef} onCancel={() => setSelectedProject(null)} onClose={() => setSelectedProject(null)}
+      <dialog
+        ref={galleryRef}
+        onCancel={() => setSelectedProject(null)}
+        onClose={() => setSelectedProject(null)}
         onKeyDown={(event) => {
-          if (event.key === "ArrowRight") { event.preventDefault(); moveProject(1); }
-          if (event.key === "ArrowLeft") { event.preventDefault(); moveProject(-1); }
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            moveProject(1);
+          }
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            moveProject(-1);
+          }
         }}
-        className="fixed inset-0 m-0 h-[100dvh] max-h-none w-screen max-w-none border-0 bg-black/95 p-0 text-white backdrop:bg-black/80">
+        className="!fixed !inset-0 !m-0 !h-[100dvh] !max-h-none !w-[100dvw] !max-w-none !border-0 !bg-black !p-0 text-white backdrop:!bg-black"
+      >
         {selectedProject !== null && (
-          <div className="flex h-full items-center justify-center p-4"
-            onClick={(event) => { if (event.target === event.currentTarget) setSelectedProject(null); }}>
-            <button type="button" onClick={() => setSelectedProject(null)}
-              className="absolute right-5 top-5 z-20 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/45 text-2xl !text-white"
-              aria-label="Galerij sluiten">Ã—</button>
-            <button type="button" onClick={() => moveProject(-1)}
-              className="absolute left-3 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/55 text-3xl !text-white"
-              aria-label="Vorige project">â€¹</button>
-            <div className="relative h-[80dvh] w-[92vw] max-w-6xl overflow-hidden rounded-2xl">
-              <Image src={projectImages[selectedProject]} alt={`Wallmade project ${selectedProject + 1}`}
-                fill sizes="92vw" className="object-contain" />
+          <div
+            className="relative flex h-[100dvh] w-full items-center justify-center px-2 py-16 sm:p-8"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                setSelectedProject(null);
+              }
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setSelectedProject(null)}
+              className="fixed right-4 top-4 z-30 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/70 shadow-lg backdrop-blur-md"
+              aria-label="Galerij sluiten"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+
+            <div className="relative flex w-full max-w-6xl items-center justify-center">
+              <button
+                type="button"
+                onClick={() => moveProject(-1)}
+                className="absolute left-1 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-black/55 shadow-lg backdrop-blur-md sm:left-4"
+                aria-label="Vorige project"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m15 18-6-6 6-6" />
+                </svg>
+              </button>
+
+              <div className="relative h-[72dvh] w-[calc(100vw-16px)] max-w-6xl overflow-hidden">
+                <Image
+                  src={projectImages[selectedProject]}
+                  alt={`Wallmade project ${selectedProject + 1}`}
+                  fill
+                  sizes="100vw"
+                  priority
+                  className="object-contain"
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={() => moveProject(1)}
+                className="absolute right-1 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-black/55 shadow-lg backdrop-blur-md sm:right-4"
+                aria-label="Volgende project"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
+              </button>
             </div>
-            <button type="button" onClick={() => moveProject(1)}
-              className="absolute right-3 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-black/55 text-3xl !text-white"
-              aria-label="Volgende project">â€º</button>
+
+            <div className="fixed bottom-5 left-1/2 z-30 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-xs text-white/80 backdrop-blur-md">
+              {selectedProject + 1} / {projectImages.length}
+            </div>
           </div>
         )}
       </dialog>
@@ -610,7 +711,7 @@ export default function Home() {
             <Brand />
             <button type="button" onClick={() => setMenuOpen(false)}
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-xl !text-white"
-              aria-label="Menu sluiten">Ã—</button>
+              aria-label="Menu sluiten">×</button>
           </div>
           <nav className="mt-7 flex flex-col">
             {navLinks.map(([name, href]) =>
@@ -632,4 +733,6 @@ export default function Home() {
     </main>
   );
 }
+
+
 

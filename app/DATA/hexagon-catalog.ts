@@ -1,4 +1,4 @@
-import catalogData from "../../data/hexagon-import.json";
+﻿import catalogData from "../../data/hexagon-import.json";
 
 export type CatalogHexagon = {
   id: string;
@@ -78,12 +78,12 @@ export const hexagonCatalog: CatalogHexagon[] =
         // Zelfde prijscorrectie als onze houten wandpanelen
         price:
           product.price !== null
-            ? product.price * 100
+            ? Math.round(product.price * 10000) / 100
             : null,
 
         oldPrice:
           product.compareAtPrice !== null
-            ? product.compareAtPrice * 100
+            ? Math.round(product.compareAtPrice * 10000) / 100
             : null,
 
         currency: product.currency || "EUR",
@@ -95,11 +95,11 @@ export const hexagonCatalog: CatalogHexagon[] =
           ...variant,
           price:
             variant.price !== null
-              ? variant.price * 100
+              ? Math.round(variant.price * 10000) / 100
               : null,
           compareAtPrice:
             variant.compareAtPrice !== null
-              ? variant.compareAtPrice * 100
+              ? Math.round(variant.compareAtPrice * 10000) / 100
               : null,
         })),
 
@@ -112,3 +112,4 @@ export function getHexagonBySlug(slug: string) {
     (product) => product.slug === slug
   );
 }
+

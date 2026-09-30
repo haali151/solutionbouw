@@ -1,7 +1,7 @@
 ﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import HexagonProductClient from "./HexagonProductClient";
-import { getHexagonBySlug } from "../../../DATA/hexagon-catalog";
+import DecorProductClient from "./DecorProductClient";
+import { getDecorBySlug } from "../../../DATA/decor-catalog";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -14,8 +14,18 @@ function cleanText(value: string) {
     .trim();
 }
 
+function shortenDescription(value: string, maxLength = 155) {
+  if (value.length <= maxLength) return value;
+
+  const cut = value.lastIndexOf(" ", maxLength);
+  return `${value.slice(0, cut > 0 ? cut : maxLength).trim()}…`;
+}
+
 function absoluteImage(url: string) {
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
   return `https://wallmade.nl${url.startsWith("/") ? url : `/${url}`}`;
 }
 
@@ -23,27 +33,34 @@ export async function generateMetadata({
   params,
 }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getHexagonBySlug(slug);
+  const product = getDecorBySlug(slug);
 
   if (!product) {
     return {
-      title: "Hexagon wandpaneel niet gevonden",
-      robots: { index: false, follow: false },
+      title: "Decor wandpaneel niet gevonden",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
   const sourceDescription = cleanText(product.description || "");
 
-  const description =
-    sourceDescription.length >= 70
-      ? sourceDescription.length > 155 ? `${sourceDescription.slice(0, sourceDescription.lastIndexOf(" ", 155)).trim()}…` : sourceDescription
-      : `${product.name} van ${product.brand}. Bekijk dit hexagon wandpaneel bij Wallmade, inclusief prijs, afbeeldingen en productinformatie.`;
+  const fallbackDescription =
+    `${product.name} van ${product.brand}. Bekijk dit decor wandpaneel bij Wallmade, inclusief prijs, afbeeldingen en productinformatie.`;
 
-  const canonical = `/wandpanelen/hexagon/${slug}`;
+  const description = shortenDescription(
+    sourceDescription.length >= 70
+      ? sourceDescription
+      : fallbackDescription
+  );
+
+  const canonical = `/wandpanelen/decor/${slug}`;
   const image = product.images?.[0] ?? "/hero-cinewall.png";
 
   return {
-    title: `${product.name} | Hexagon Wandpaneel`,
+    title: `${product.name} | Decor Wandpaneel`,
 
     description,
 
@@ -61,7 +78,7 @@ export async function generateMetadata({
       images: [
         {
           url: image,
-          alt: `${product.name} hexagon wandpaneel`,
+          alt: `${product.name} decor wandpaneel`,
         },
       ],
     },
@@ -75,29 +92,36 @@ export async function generateMetadata({
   };
 }
 
-export default async function HexagonProductPage({ params }: Props) {
+export default async function DecorProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = getHexagonBySlug(slug);
+  const product = getDecorBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
   const baseUrl = "https://wallmade.nl";
-  const productUrl = `${baseUrl}/wandpanelen/hexagon/${slug}`;
+  const productUrl = `${baseUrl}/wandpanelen/decor/${slug}`;
 
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
+
     name: product.name,
+
     description: cleanText(product.description || ""),
-    category: "Hexagon wandpaneel",
+
+    category: product.productType || "Decor wandpaneel",
+
     image: product.images.map(absoluteImage),
+
     brand: {
       "@type": "Brand",
       name: product.brand,
     },
+
     url: productUrl,
+
     ...(product.price !== null
       ? {
           offers: {
@@ -117,6 +141,7 @@ export default async function HexagonProductPage({ params }: Props) {
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+
     itemListElement: [
       {
         "@type": "ListItem",
@@ -133,8 +158,8 @@ export default async function HexagonProductPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 3,
-        name: "Hexagon",
-        item: `${baseUrl}/wandpanelen#hexagon`,
+        name: "Decor",
+        item: `${baseUrl}/wandpanelen#decor`,
       },
       {
         "@type": "ListItem",
@@ -161,8 +186,7 @@ export default async function HexagonProductPage({ params }: Props) {
         }}
       />
 
-      <HexagonProductClient params={params} />
+      <DecorProductClient params={params} />
     </>
   );
 }
-

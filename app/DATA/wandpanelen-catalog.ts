@@ -1,4 +1,4 @@
-import catalogData from "../../data/wandpanelen-import.json";
+﻿import catalogData from "../../data/wandpanelen-import.json";
 
 export type CatalogWandpaneel = {
   id: string;
@@ -67,12 +67,12 @@ export const wandpanelenCatalog: CatalogWandpaneel[] =
         productType: product.productType || "Houten wandpaneel",
 price:
   product.price !== null
-    ? product.price * 100
+    ? Math.round(product.price * 10000) / 100
     : null,
 
 oldPrice:
   product.compareAtPrice !== null
-    ? product.compareAtPrice * 100
+    ? Math.round(product.compareAtPrice * 10000) / 100
     : null,
         currency: product.currency || "EUR",
         description: product.description || "",

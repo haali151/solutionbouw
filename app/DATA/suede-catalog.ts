@@ -82,12 +82,12 @@ export const suedeCatalog: CatalogSuede[] =
         // Prijscorrectie
         price:
           product.price !== null
-            ? product.price * 100
+            ? Math.round(product.price * 10000) / 100
             : null,
 
         oldPrice:
           product.compareAtPrice !== null
-            ? product.compareAtPrice * 100
+            ? Math.round(product.compareAtPrice * 10000) / 100
             : null,
 
         currency:
@@ -108,12 +108,12 @@ export const suedeCatalog: CatalogSuede[] =
 
             price:
               variant.price !== null
-                ? variant.price * 100
+                ? Math.round(variant.price * 10000) / 100
                 : null,
 
             compareAtPrice:
               variant.compareAtPrice !== null
-                ? variant.compareAtPrice * 100
+                ? Math.round(variant.compareAtPrice * 10000) / 100
                 : null,
           })
         ),

@@ -1,415 +1,168 @@
-"use client";
-
-import { use, useState } from "react";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import SuedeProductClient from "./SuedeProductClient";
 import { getSuedeBySlug } from "../../../DATA/suede-catalog";
 
-export default function SuedeProductPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ slug: string }>;
-}) {
-  const { slug } = use(params);
+};
 
+function cleanText(value: string) {
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function absoluteImage(url: string) {
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `https://wallmade.nl${url.startsWith("/") ? url : `/${url}`}`;
+}
+
+export async function generateMetadata({
+  params,
+}: Props): Promise<Metadata> {
+  const { slug } = await params;
   const product = getSuedeBySlug(slug);
 
-  const [selectedImage, setSelectedImage] = useState(0);
+  if (!product) {
+    return {
+      title: "Suède wandpaneel niet gevonden",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const sourceDescription = cleanText(product.description || "");
+
+  const description =
+    sourceDescription.length >= 70
+      ? sourceDescription.length > 155 ? `${sourceDescription.slice(0, sourceDescription.lastIndexOf(" ", 155)).trim()}…` : sourceDescription
+      : `${product.name} van ${product.brand}. Bekijk dit suède akoestisch wandpaneel bij Wallmade, inclusief prijs, afbeeldingen en productinformatie.`;
+
+  const canonical = `/wandpanelen/suede/${slug}`;
+  const image = product.images?.[0] ?? "/hero-cinewall.png";
+
+  return {
+    title: `${product.name} | Suède Wandpaneel`,
+
+    description,
+
+    alternates: {
+      canonical,
+    },
+
+    openGraph: {
+      title: `${product.name} | Wallmade`,
+      description,
+      url: `https://wallmade.nl${canonical}`,
+      siteName: "Wallmade",
+      locale: "nl_NL",
+      type: "website",
+      images: [
+        {
+          url: image,
+          alt: `${product.name} suède akoestisch wandpaneel`,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} | Wallmade`,
+      description,
+      images: [image],
+    },
+  };
+}
+
+export default async function SuedeProductPage({ params }: Props) {
+  const { slug } = await params;
+  const product = getSuedeBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  function formatPrice(price: number | null) {
-    if (price === null) {
-      return "Prijs op aanvraag";
-    }
+  const baseUrl = "https://wallmade.nl";
+  const productUrl = `${baseUrl}/wandpanelen/suede/${slug}`;
 
-    return new Intl.NumberFormat("nl-NL", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price);
-  }
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: cleanText(product.description || ""),
+    category: "Suède akoestisch wandpaneel",
+    image: product.images.map(absoluteImage),
+    brand: {
+      "@type": "Brand",
+      name: product.brand,
+    },
+    url: productUrl,
+    ...(product.price !== null
+      ? {
+          offers: {
+            "@type": "Offer",
+            url: productUrl,
+            priceCurrency: product.currency || "EUR",
+            price: product.price,
+            availability: product.available
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            itemCondition: "https://schema.org/NewCondition",
+          },
+        }
+      : {}),
+  };
 
-  const hasDiscount =
-    product.oldPrice !== null &&
-    product.price !== null &&
-    product.oldPrice > product.price;
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Wandpanelen",
+        item: `${baseUrl}/wandpanelen`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: "Suède",
+        item: `${baseUrl}/wandpanelen#suede`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: product.name,
+        item: productUrl,
+      },
+    ],
+  };
 
   return (
-    <main className="min-h-screen bg-black text-white">
-
-      {/* HEADER */}
-      <header className="border-b border-white/10">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-6">
-          <a
-            href="/"
-            className="text-sm font-medium uppercase tracking-[0.25em]"
-          >
-            Solutionbouw
-          </a>
-
-          <a
-            href="/wandpanelen"
-            className="text-sm text-neutral-400 transition hover:text-white"
-          >
-            ← Terug naar wandpanelen
-          </a>
-        </div>
-      </header>
-
-      {/* PRODUCT */}
-      <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:py-16">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-
-          {/* IMAGES */}
-          <div>
-            <div className="relative aspect-square overflow-hidden rounded-[2rem] border border-white/10 bg-[#0d0d0d]">
-
-              {product.images[selectedImage] ? (
-                <img
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-neutral-600">
-                  Geen afbeelding
-                </div>
-              )}
-
-              {hasDiscount && (
-                <span className="absolute left-5 top-5 rounded-full bg-white px-4 py-2 text-xs font-medium text-black">
-                  Aanbieding
-                </span>
-              )}
-
-              <span className="absolute bottom-5 left-5 rounded-full border border-white/10 bg-black/70 px-4 py-2 text-xs uppercase tracking-[0.2em] backdrop-blur-md">
-                Suède
-              </span>
-
-            </div>
-
-            {/* THUMBNAILS */}
-            {product.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-4 gap-3 sm:grid-cols-5">
-
-                {product.images.map((image, index) => (
-                  <button
-                    key={`${image}-${index}`}
-                    type="button"
-                    onClick={() =>
-                      setSelectedImage(index)
-                    }
-                    className={`aspect-square overflow-hidden rounded-xl border transition ${
-                      selectedImage === index
-                        ? "border-white"
-                        : "border-white/10 hover:border-white/40"
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.name} ${index + 1}`}
-                      loading="lazy"
-                      className="h-full w-full object-cover bg-[#0d0d0d]"
-                    />
-                  </button>
-                ))}
-
-              </div>
-            )}
-          </div>
-
-          {/* INFO */}
-          <div className="lg:pt-4">
-
-            <p className="text-xs uppercase tracking-[0.3em] text-neutral-500">
-              {product.brand}
-            </p>
-
-            <h1 className="mt-4 text-4xl font-light leading-tight sm:text-5xl">
-              {product.name}
-            </h1>
-
-            <p className="mt-4 text-sm text-neutral-500">
-              Suède akoestisch wandpaneel
-            </p>
-
-            {/* PRICE */}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-
-              <span className="text-3xl font-medium">
-                {formatPrice(product.price)}
-              </span>
-
-              {hasDiscount && (
-                <span className="text-lg text-neutral-600 line-through">
-                  {formatPrice(product.oldPrice)}
-                </span>
-              )}
-
-            </div>
-
-            {/* STOCK */}
-            <div className="mt-6 flex items-center gap-3">
-
-              <span
-                className={`h-2.5 w-2.5 rounded-full ${
-                  product.available
-                    ? "bg-green-500"
-                    : "bg-neutral-600"
-                }`}
-              />
-
-              <span className="text-sm text-neutral-400">
-                {product.available
-                  ? "Beschikbaar"
-                  : "Niet op voorraad"}
-              </span>
-
-            </div>
-
-            {/* EXPLANATION */}
-            <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-
-              <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-                Over Suède wandpanelen
-              </p>
-
-              <h2 className="mt-3 text-xl font-medium">
-                Zachte uitstraling met akoestisch comfort
-              </h2>
-
-              <p className="mt-4 leading-7 text-neutral-400">
-                Suède akoestische wandpanelen combineren
-                een zachte, luxe uitstraling met een
-                moderne wandafwerking. De Suède look
-                brengt warmte en rust in het interieur
-                en vormt een stijlvol alternatief voor
-                traditionele houten wandpanelen.
-              </p>
-
-              <p className="mt-4 leading-7 text-neutral-400">
-                De panelen zijn geschikt voor onder
-                andere woonkamers, slaapkamers,
-                kantoren en moderne Cinewalls.
-              </p>
-
-            </div>
-
-            {/* ORIGINAL DESCRIPTION */}
-            {product.description && (
-              <div className="mt-10 border-t border-white/10 pt-8">
-
-                <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-                  Productinformatie
-                </p>
-
-                <h2 className="mt-3 text-xl font-medium">
-                  Productomschrijving
-                </h2>
-
-                <div
-                  className="mt-5 leading-8 text-neutral-400 [&_a]:text-white [&_h1]:mb-4 [&_h1]:text-xl [&_h1]:text-white [&_h2]:mb-4 [&_h2]:mt-7 [&_h2]:text-xl [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:text-white [&_li]:ml-5 [&_li]:mb-2 [&_li]:list-disc [&_p]:mb-4 [&_strong]:text-white [&_ul]:my-5"
-                  dangerouslySetInnerHTML={{
-                    __html: product.description,
-                  }}
-                />
-
-              </div>
-            )}
-
-            {/* VARIANTS */}
-            {product.variants.length > 1 && (
-              <div className="mt-10 border-t border-white/10 pt-8">
-
-                <h2 className="text-xl font-medium">
-                  Uitvoeringen
-                </h2>
-
-                <div className="mt-5 space-y-3">
-
-                  {product.variants.map((variant) => {
-                    const variantDiscount =
-                      variant.compareAtPrice !== null &&
-                      variant.price !== null &&
-                      variant.compareAtPrice >
-                        variant.price;
-
-                    return (
-                      <div
-                        key={variant.id}
-                        className="flex items-center justify-between gap-5 rounded-2xl border border-white/10 p-4"
-                      >
-
-                        <div>
-                          <p className="font-medium">
-                            {variant.title}
-                          </p>
-
-                          {variant.sku && (
-                            <p className="mt-1 text-xs text-neutral-600">
-                              SKU: {variant.sku}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="text-right">
-
-                          <p>
-                            {formatPrice(
-                              variant.price
-                            )}
-                          </p>
-
-                          {variantDiscount && (
-                            <p className="text-xs text-neutral-600 line-through">
-                              {formatPrice(
-                                variant.compareAtPrice
-                              )}
-                            </p>
-                          )}
-
-                          <p className="mt-1 text-xs text-neutral-500">
-                            {variant.available
-                              ? "Beschikbaar"
-                              : "Uitverkocht"}
-                          </p>
-
-                        </div>
-
-                      </div>
-                    );
-                  })}
-
-                </div>
-              </div>
-            )}
-
-            {/* BENEFITS */}
-            <div className="mt-10 border-t border-white/10 pt-8">
-
-              <h2 className="text-xl font-medium">
-                Waarom Suède wandpanelen?
-              </h2>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-
-                <div className="rounded-2xl border border-white/10 p-5">
-                  <p className="font-medium">
-                    Zachte uitstraling
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    De Suède look geeft de wand een
-                    warme en comfortabele uitstraling.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 p-5">
-                  <p className="font-medium">
-                    Akoestisch
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    Ontworpen om sfeer en akoestisch
-                    comfort te combineren.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 p-5">
-                  <p className="font-medium">
-                    Luxe interieur
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    Past uitstekend in moderne,
-                    Japandi en minimalistische
-                    interieurs.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 p-5">
-                  <p className="font-medium">
-                    Veelzijdig
-                  </p>
-
-                  <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    Geschikt voor woonkamer,
-                    slaapkamer, kantoor en Cinewall.
-                  </p>
-                </div>
-
-              </div>
-            </div>
-
-            {/* CTA */}
-            <div className="mt-10 border-t border-white/10 pt-8">
-
-              <a
-                href="/cinewall-configurator"
-                className="flex w-full items-center justify-center rounded-full bg-white px-7 py-4 font-medium text-black transition hover:bg-neutral-200"
-              >
-                Combineer met een Cinewall
-              </a>
-
-              <a
-                href="/#contact"
-                className="mt-3 flex w-full items-center justify-center rounded-full border border-white/15 px-7 py-4 font-medium transition hover:bg-white hover:text-black"
-              >
-                Offerte aanvragen
-              </a>
-
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* BOTTOM */}
-      <section className="border-t border-white/10">
-
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6">
-
-          <div className="grid gap-8 md:grid-cols-3">
-
-            <div>
-              <p className="text-sm font-medium">
-                Moderne wandafwerking
-              </p>
-
-              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                Een zachte en stijlvolle afwerking
-                voor moderne interieurs.
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium">
-                Akoestisch comfort
-              </p>
-
-              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                Combineert design met een
-                aangenamere akoestische sfeer.
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium">
-                Solutionbouw
-              </p>
-
-              <p className="mt-2 text-sm leading-6 text-neutral-500">
-                Combineer jouw Suède wandpanelen
-                met een complete Cinewall op maat.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productSchema),
+        }}
+      />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema),
+        }}
+      />
+
+      <SuedeProductClient params={params} />
+    </>
   );
 }
+
