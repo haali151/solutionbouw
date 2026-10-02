@@ -164,14 +164,14 @@ export default async function WandpaneelProductPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema),
+          __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
         }}
       />
 
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbSchema),
+          __html: JSON.stringify(breadcrumbSchema).replace(/</g, "\\u003c"),
         }}
       />
 

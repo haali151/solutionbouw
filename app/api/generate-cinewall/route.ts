@@ -1,3 +1,5 @@
+import sharp from "sharp";
+import { boundedBody, enterRequest, errorResponse, RequestError } from "../../lib/api-security";
 import OpenAI, { toFile } from "openai";
 
 
@@ -18,7 +20,10 @@ function getField(
     return fallback;
   }
 
-  return String(value).trim();
+  if (typeof value !== "string" || value.length > 300) {
+    throw new RequestError(400, "Ongeldige ontwerpoptie.");
+  }
+  return value.trim();
 }
 
 function isYes(value: string) {
@@ -186,7 +191,9 @@ The visible total MUST equal exactly ${count}.
 ========================================================= */
 
 export async function POST(request: Request) {
+  let release: (() => void) | undefined;
   try {
+    release = enterRequest(request, "image");
     /* =====================================================
        API KEY
     ===================================================== */
@@ -197,7 +204,7 @@ export async function POST(request: Request) {
       return Response.json(
         {
           success: false,
-          error: "OPENAI_API_KEY ontbreekt.",
+          error: "De service is tijdelijk niet beschikbaar.",
         },
         {
           status: 500,
@@ -207,13 +214,15 @@ export async function POST(request: Request) {
 
     const openai = new OpenAI({
       apiKey,
+      maxRetries: 0,
+      timeout: 120000,
     });
 
     /* =====================================================
        FORM DATA
     ===================================================== */
 
-    const formData = await request.formData();
+    const formData = await (await boundedBody(request, 16777216)).formData().catch(() => { throw new RequestError(400, "Ongeldig formulier."); });
 
     const image = formData.get("image") as File | null;
 
@@ -455,7 +464,7 @@ export async function POST(request: Request) {
        IMAGE VALIDATION
     ===================================================== */
 
-    if (!image) {
+    if (!(image instanceof File) || image.size === 0) {
       return Response.json(
         {
           success: false,
@@ -504,21 +513,21 @@ export async function POST(request: Request) {
     ===================================================== */
 
 
-const imageBytes = Buffer.from(await image.arrayBuffer());
-
-console.log("Wallmade image:", {
-  originalName: image.name,
-  originalType: image.type,
-  originalSize: image.size,
-});
-
-const uploadedImage = await toFile(
-  imageBytes,
-  image.name || "wallmade-room.jpg",
-  {
-    type: image.type || "image/jpeg",
-  }
-);
+    let imageBytes: Buffer;
+    try {
+      const input = Buffer.from(await image.arrayBuffer());
+      const metadata = await sharp(input, { limitInputPixels: 25_000_000 }).metadata();
+      if (!["jpeg", "png", "webp"].includes(metadata.format || "") || (metadata.pages || 1) > 1) {
+        throw new Error("Unsupported image");
+      }
+      // Decode and re-encode: strip EXIF/location and never send the original filename.
+      imageBytes = await sharp(input, { limitInputPixels: 25_000_000 })
+        .rotate().resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 90 }).toBuffer();
+    } catch {
+      throw new RequestError(400, "Gebruik een geldige JPG-, PNG- of WebP-foto tot 25 megapixels.");
+    }
+    const uploadedImage = await toFile(imageBytes, "room.jpg", { type: "image/jpeg" });
 
     /* =====================================================
        DERIVED CONFIGURATION
@@ -1228,58 +1237,8 @@ configuration I asked Wallmade to build."
       },
     });
   } catch (error: unknown) {
-    console.error(
-      "Wallmade Cinewall AI error:",
-      error
-    );
-
-    let status = 500;
-
-    let message =
-      "Het AI-ontwerp kon niet worden gegenereerd.";
-
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "status" in error &&
-      typeof (error as { status?: unknown }).status ===
-        "number"
-    ) {
-      status = (
-        error as {
-          status: number;
-        }
-      ).status;
-    }
-
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error &&
-      typeof (
-        error as {
-          message?: unknown;
-        }
-      ).message === "string"
-    ) {
-      console.error(
-        "OpenAI error message:",
-        (
-          error as {
-            message: string;
-          }
-        ).message
-      );
-    }
-
-    return Response.json(
-      {
-        success: false,
-        error: message,
-      },
-      {
-        status,
-      }
-    );
+    return errorResponse(error);
+  } finally {
+    release?.();
   }
 }

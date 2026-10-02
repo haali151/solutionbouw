@@ -1,3 +1,4 @@
+import { boundedBody, enterRequest, errorResponse, RequestError } from "../../lib/api-security";
 import OpenAI from "openai";
 
 export const runtime = "nodejs";
@@ -150,14 +151,16 @@ function applyPatch(
 ========================================================= */
 
 export async function POST(request: Request) {
+  let release: (() => void) | undefined;
   try {
+    release = enterRequest(request, "chat");
     const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey) {
       return Response.json(
         {
           success: false,
-          error: "OPENAI_API_KEY ontbreekt.",
+          error: "De service is tijdelijk niet beschikbaar.",
         },
         {
           status: 500,
@@ -167,9 +170,11 @@ export async function POST(request: Request) {
 
     const openai = new OpenAI({
       apiKey,
+      maxRetries: 0,
+      timeout: 45000,
     });
 
-    const body = await request.json().catch(() => null);
+    const body = await (await boundedBody(request, 32768)).json().catch(() => { throw new RequestError(400, "Ongeldige JSON."); });
 
     if (!body || typeof body !== "object") {
       return Response.json(
@@ -826,29 +831,8 @@ ${message}
       design: nextDesign,
     });
   } catch (error: unknown) {
-    console.error("Wallmade AI Assistant error:", error);
-
-    let status = 500;
-
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "status" in error &&
-      typeof (error as { status?: unknown }).status ===
-        "number"
-    ) {
-      status = (error as { status: number }).status;
-    }
-
-    return Response.json(
-      {
-        success: false,
-        error:
-          "Wallmade AI kon het bericht niet verwerken. Probeer opnieuw.",
-      },
-      {
-        status,
-      }
-    );
+    return errorResponse(error);
+  } finally {
+    release?.();
   }
 }

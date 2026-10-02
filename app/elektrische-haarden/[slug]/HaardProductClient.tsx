@@ -1,4 +1,5 @@
 "use client";
+import { safeProductHtml } from "@/app/lib/product-html";
 
 import { use, useState } from "react";
 import { notFound } from "next/navigation";
@@ -197,7 +198,7 @@ export default function HaardProductPage({
             </div>
             <div
               className="max-w-3xl text-[15px] leading-8 text-black/60 [&_a]:underline [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-4 [&_strong]:font-semibold [&_strong]:text-black"
-              dangerouslySetInnerHTML={{ __html: product.description }}
+              dangerouslySetInnerHTML={{ __html: safeProductHtml(product.description) }}
             />
           </div>
         </section>

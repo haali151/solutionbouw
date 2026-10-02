@@ -1,4 +1,5 @@
 "use client";
+import { safeProductHtml } from "@/app/lib/product-html";
 
 import { use, useState } from "react";
 import { notFound } from "next/navigation";
@@ -211,7 +212,7 @@ export default function SuedeProductPage({
                 <div
                   className="mt-5 leading-8 text-neutral-400 [&_a]:text-white [&_h1]:mb-4 [&_h1]:text-xl [&_h1]:text-white [&_h2]:mb-4 [&_h2]:mt-7 [&_h2]:text-xl [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:text-white [&_li]:ml-5 [&_li]:mb-2 [&_li]:list-disc [&_p]:mb-4 [&_strong]:text-white [&_ul]:my-5"
                   dangerouslySetInnerHTML={{
-                    __html: product.description,
+                    __html: safeProductHtml(product.description),
                   }}
                 />
 

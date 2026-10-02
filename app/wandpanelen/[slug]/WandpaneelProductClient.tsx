@@ -1,4 +1,5 @@
 "use client";
+import { safeProductHtml } from "@/app/lib/product-html";
 
 import { use, useState } from "react";
 import { notFound } from "next/navigation";
@@ -164,7 +165,7 @@ export default function WandpaneelProductPage({
                 <div
                   className="mt-5 leading-8 text-neutral-400 [&_a]:text-white [&_li]:ml-5 [&_li]:list-disc [&_p]:mb-4 [&_strong]:text-white"
                   dangerouslySetInnerHTML={{
-                    __html: product.description,
+                    __html: safeProductHtml(product.description),
                   }}
                 />
               </div>
