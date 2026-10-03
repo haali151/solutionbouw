@@ -65,20 +65,73 @@ const nonElectricKeywords = [
   "houthaard",
   "pelletkachel",
   "pellethaard",
-  "ethanol",
+  "bioethanol",
 ];
+
+const blockedExactTags = new Set([
+  "gas",
+  "hout",
+  "pellet",
+  "pellets",
+  "bioethanol",
+]);
+
+function normalizeFilterText(value?: string | null) {
+  return (value ?? "")
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+}
 
 function isElectricFireplace(product: {
   title?: string | null;
   slug?: string | null;
   productType?: string | null;
+  tags?: string[] | null;
 }) {
-  return ![product.title, product.slug, product.productType].some((value) => {
-    const text = (value ?? "").toLowerCase().replace(/[\s_-]+/g, "");
-    return nonElectricKeywords.some((keyword) => text.includes(keyword));
-  });
+  const coreFields = [
+    product.title,
+    product.slug,
+    product.productType,
+  ].map(normalizeFilterText);
+
+  if (
+    coreFields.some((text) =>
+      nonElectricKeywords.some((keyword) => text.includes(keyword))
+    )
+  ) {
+    return false;
+  }
+
+  const tags = (product.tags ?? []).map(normalizeFilterText);
+
+  if (
+    tags.some(
+      (tag) =>
+        blockedExactTags.has(tag) ||
+        nonElectricKeywords.some((keyword) => tag.includes(keyword))
+    )
+  ) {
+    return false;
+  }
+
+  const title = normalizeFilterText(product.title);
+
+  if (title.includes("tvmeubel")) {
+    return false;
+  }
+
+  return true;
 }
 
+function cleanDescription(description?: string | null) {
+  return (description ?? "")
+    .replace(/diamondflame\.nl/gi, "Wallmade")
+    .replace(/\bdiamondflame\b/gi, "Wallmade")
+    .replace(/kom naar ons experience center in lunteren[^.]*\./gi, "")
+    .replace(/bezoek ons experience center[^.]*\./gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
 export const haardenCatalog: CatalogHaard[] =
   catalogData.products
     .filter((product) => product.price > 0 && isElectricFireplace(product))
@@ -109,7 +162,7 @@ export const haardenCatalog: CatalogHaard[] =
 
       name: product.title,
 
-      brand: product.vendor || "Solutionbouw",
+      brand: (product.vendor || "").toLowerCase() === "diamondflame.nl" ? ((product.title || "").trim().split(/\s+/)[0] || "Wallmade") : (product.vendor || "Wallmade"),
 
       productType: product.productType || "",
 
@@ -122,7 +175,7 @@ oldPrice:
 
       currency: product.currency || "EUR",
 
-      description: product.description || "",
+      description: cleanDescription(product.description),
 
       images: localImages,
 
