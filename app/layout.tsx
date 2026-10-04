@@ -98,6 +98,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen antialiased`}
       >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18485790571"
+          strategy="afterInteractive"
+        />
+        <Script id="google-ads-tag" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18485790571');
+          `}
+        </Script>
         {children}
         {/* <FloatingContact /> */}
       </body>
