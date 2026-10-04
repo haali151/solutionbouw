@@ -27,7 +27,7 @@ const navLinks = [
   ["Cinewall Ontwerpen", "/cinewall-ontwerpen"],
   ["Collectie", "#collectie"],
   ["AI Designer", "/ai-designer"],
-  ["Prijs berekenen", "/cinewall-configurator"],
+  ["Stel jouw cinewall samen", "/cinewall-configurator"],
   ["Contact", "#contact"],
 ] as const;
 
@@ -473,7 +473,7 @@ export default function Home() {
           <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[22px] bg-black/10 lg:grid-cols-4">
             {[
               ["01", "Ontwerp", "Vertel ons jouw wensen of start met AI."],
-              ["02", "Offerte", "Je ontvangt een duidelijke prijs en voorstel."],
+              ["02", "Offerte", "Vraag eenvoudig jouw offerte aan via WhatsApp."],
               ["03", "Planning", "Samen bepalen we het juiste moment."],
               ["04", "Montage", "Wij bouwen en werken alles strak af."],
             ].map(([number, title, text]) => (
@@ -495,9 +495,9 @@ export default function Home() {
             <div className="absolute inset-0 bg-black/55" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent" />
             <div className="relative z-10 flex min-h-[420px] flex-col justify-end p-6 pb-24 text-white sm:min-h-[560px] sm:p-10 sm:pb-28 lg:p-14">
-              <p className="text-[9px] uppercase tracking-[0.24em] text-[#D4A77F]">Klaar voor jouw ruimte?</p>
+              <p className="text-[9px] uppercase tracking-[0.24em] text-[#D4A77F]">Klaar voor jouw cinewall?</p>
               <h2 className="mt-4 max-w-3xl text-[38px] font-light leading-[0.98] tracking-[-0.045em] sm:text-6xl">
-                Van eerste idee naar een interieur dat klopt.
+                Van idee naar jouw cinewall op maat.
               </h2>
               <div className="mt-7 flex flex-col gap-2 sm:flex-row">
                 <Link href="/ai-designer"
@@ -506,7 +506,7 @@ export default function Home() {
                 </Link>
                 <Link href="/cinewall-configurator"
                   className="flex h-[52px] items-center justify-center rounded-full border border-white/25 bg-black/20 px-6 text-sm font-medium !text-white backdrop-blur sm:min-w-[220px]">
-                  Prijs berekenen
+                  Stel jouw cinewall samen
                 </Link>
               </div>
             </div>
@@ -614,7 +614,7 @@ export default function Home() {
           </Link>
           <Link href="/cinewall-configurator"
             className="flex min-w-0 items-center justify-center rounded-full bg-white/[0.04] px-3 py-3.5 text-[12px] font-medium !text-white">
-            <span className="whitespace-nowrap">Prijs berekenen</span>
+            <span className="whitespace-nowrap">Stel jouw cinewall samen</span>
           </Link>
           <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
             className="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#25D366] !text-white">
