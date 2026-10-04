@@ -101,7 +101,13 @@ export default function CinewallsPage() {
               <p className="mt-4 max-w-2xl text-sm leading-7 text-black/50">
                 De prijs hangt af van de breedte, het aantal nissen, de elektrische haard,
                 verlichting, houtafwerking en het tv-meubel. Stel jouw cinewall samen en
-                bekijk direct een prijsindicatie.
+                bekijk direct een prijsindicatie.{" "}
+                <Link
+                  href="/cinewall-kosten"
+                  className="font-medium text-black underline decoration-black/20 underline-offset-4 hover:decoration-black"
+                >
+                  Bekijk alle cinewall kosten en basisprijzen.
+                </Link>
               </p>
             </div>
 
