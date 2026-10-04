@@ -96,7 +96,7 @@ export default function CinewallMetHaardPage() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/cinewall-configurator"
-              className="rounded-full bg-[#171513] px-7 py-4 text-sm font-medium text-white"
+              className="rounded-full bg-[#171513] px-7 py-4 text-sm font-medium !text-white" style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
             >
               Stel jouw cinewall samen
             </Link>
@@ -216,7 +216,7 @@ export default function CinewallMetHaardPage() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/cinewall-configurator"
-                  className="rounded-full bg-[#171513] px-6 py-3.5 text-sm font-medium text-white"
+                  className="rounded-full bg-[#171513] px-6 py-3.5 text-sm font-medium !text-white" style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
                 >
                   Stel jouw cinewall samen
                 </Link>
