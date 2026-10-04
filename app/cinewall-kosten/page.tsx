@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Cinewall Kosten & Prijzen | Wat Kost een Cinewall? | Wallmade",
+  title: "Cinewall Kosten & Prijzen | Wat Kost een Cinewall?",
   description:
     "Wat kost een cinewall op maat? Bekijk de basisprijzen, ontdek welke keuzes de prijs bepalen en bereken direct jouw cinewall prijs bij Wallmade.",
   alternates: {

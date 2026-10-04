@@ -1,6 +1,7 @@
 export const metadata = {
-  title: "Privacybeleid | Wallmade",
+  title: "Privacybeleid",
   description: "Lees hoe Wallmade omgaat met persoonsgegevens, contactaanvragen en afbeeldingen die worden geüpload via de AI Designer.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

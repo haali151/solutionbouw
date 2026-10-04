@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import CinewallGallery from "./CinewallGallery";
 
 export const metadata: Metadata = {
-  title: "Cinewall Ontwerpen & Inspiratie | Wallmade",
+  title: "Cinewall Ontwerpen & Inspiratie",
   description:
     "Bekijk onze cinewall ontwerpen en doe inspiratie op voor jouw woonkamer. Moderne cinewalls met elektrische haard, houtpanelen, nissen en meer.",
   alternates: {

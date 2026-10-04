@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Cinewall met Haard | Cinewall op Maat | Wallmade",
+  title: "Cinewall met Haard | Cinewall op Maat",
   description:
     "Ontdek een cinewall met elektrische haard op maat. Combineer jouw tv-wand met nissen, verlichting, wandpanelen en een passende sfeerhaard.",
   alternates: {

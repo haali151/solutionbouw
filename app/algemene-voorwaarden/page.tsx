@@ -1,6 +1,7 @@
 export const metadata = {
-  title: "Algemene voorwaarden | Wallmade",
+  title: "Algemene voorwaarden",
   description: "Algemene voorwaarden van Wallmade, onderdeel van H. Solution Bouw.",
+  alternates: { canonical: "/algemene-voorwaarden" },
 };
 
 export default function TermsPage() {
