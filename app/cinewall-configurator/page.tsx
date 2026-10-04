@@ -486,21 +486,38 @@ export default function CinewallConfigurator() {
   }
 
   function openQuote() {
+    const message = [
+      "Hallo Wallmade,",
+      "",
+      "Ik wil graag een offerte aanvragen voor deze Cinewall.",
+      "",
+      "MIJN CONFIGURATIE",
+      `- Model: ${selectedCinewall.name}`,
+      `- Cinewall breedte: ${width} meter`,
+      `- Nissen: ${selectedCinewall.shelves}`,
+      `- Elektrische haard: ${
+        selectedFireplace
+          ? `${selectedFireplace.name} ${selectedFireplace.size}`
+          : "Geen"
+      }`,
+      `- TV-meubel: ${selectedCabinet.name}`,
+      `- Hout in de nissen: ${
+        woodInNiches && selectedCinewall.shelves > 0 ? "Ja" : "Nee"
+      }`,
+      `- Wit schilderwerk: ${painting ? "Ja" : "Nee"}`,
+      `- Oude Cinewall verwijderen: ${removeOld ? "Ja" : "Nee"}`,
+      `- Extra stroompunten: ${extraPowerPoints}`,
+      "",
+      `Geschatte totaalprijs: ${money(total)}`,
+      "",
+      "Ik kan via WhatsApp ook een foto en de exacte wandmaten sturen.",
+    ].join("\n");
 
-    setQuoteOpen(true);
-
-    window.setTimeout(() => {
-
-      quoteRef.current?.scrollIntoView({
-
-        behavior: "smooth",
-
-        block: "start",
-
-      });
-
-    }, 80);
-
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   }
 
   function updateCustomer(field: keyof CustomerForm, value: string) {
