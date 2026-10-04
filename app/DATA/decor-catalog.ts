@@ -1,4 +1,4 @@
-﻿import catalogData from "../../data/decor-import.json";
+import catalogData from "../../data/decor-import.json";
 
 export type CatalogDecor = {
   id: string;
@@ -76,7 +76,7 @@ export const decorCatalog: CatalogDecor[] =
         name: product.title,
 
         brand:
-          product.vendor || "Solutionbouw",
+          product.vendor || "Wallmade",
 
         productType:
           product.productType ||

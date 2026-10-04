@@ -1,4 +1,4 @@
-﻿import catalogData from "../../data/hexagon-import.json";
+import catalogData from "../../data/hexagon-import.json";
 
 export type CatalogHexagon = {
   id: string;
@@ -71,7 +71,7 @@ export const hexagonCatalog: CatalogHexagon[] =
         id: product.id,
         slug: product.slug,
         name: product.title,
-        brand: product.vendor || "Solutionbouw",
+        brand: product.vendor || "Wallmade",
         productType:
           product.productType || "Hexagon wandpaneel",
 

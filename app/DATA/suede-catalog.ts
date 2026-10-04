@@ -73,11 +73,11 @@ export const suedeCatalog: CatalogSuede[] =
         slug: product.slug,
         name: product.title,
         brand:
-          product.vendor || "Solutionbouw",
+          product.vendor || "Wallmade",
 
         productType:
           product.productType ||
-          "Suède akoestisch wandpaneel",
+          "SuÃƒÂ¨de akoestisch wandpaneel",
 
         // Prijscorrectie
         price:

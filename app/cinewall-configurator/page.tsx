@@ -521,7 +521,7 @@ export default function CinewallConfigurator() {
 
     const message = [
 
-      "Hallo Solutionbouw,",
+      "Hallo Wallmade,",
 
       "",
 
@@ -531,11 +531,11 @@ export default function CinewallConfigurator() {
 
       "MIJN CONFIGURATIE",
 
-      `• Model: ${selectedCinewall.name}`,
+      `â€¢ Model: ${selectedCinewall.name}`,
 
-      `• Cinewall breedte: ${width} meter`,
+      `â€¢ Cinewall breedte: ${width} meter`,
 
-      `• Elektrische haard: ${
+      `â€¢ Elektrische haard: ${
 
         selectedFireplace
 
@@ -545,19 +545,19 @@ export default function CinewallConfigurator() {
 
       }`,
 
-      `• TV-meubel: ${selectedCabinet.name}`,
+      `â€¢ TV-meubel: ${selectedCabinet.name}`,
 
-      `• Hout in de nissen: ${
+      `â€¢ Hout in de nissen: ${
 
         woodInNiches && selectedCinewall.shelves > 0 ? "Ja" : "Nee"
 
       }`,
 
-      `• Wit schilderwerk: ${painting ? "Ja" : "Nee"}`,
+      `â€¢ Wit schilderwerk: ${painting ? "Ja" : "Nee"}`,
 
-      `• Oude Cinewall verwijderen: ${removeOld ? "Ja" : "Nee"}`,
+      `â€¢ Oude Cinewall verwijderen: ${removeOld ? "Ja" : "Nee"}`,
 
-      `• Extra stroompunten: ${extraPowerPoints}`,
+      `â€¢ Extra stroompunten: ${extraPowerPoints}`,
 
       "",
 
@@ -567,21 +567,21 @@ export default function CinewallConfigurator() {
 
       "MIJN GEGEVENS",
 
-      `• Naam: ${customer.name}`,
+      `â€¢ Naam: ${customer.name}`,
 
-      `• Telefoon: ${customer.phone}`,
+      `â€¢ Telefoon: ${customer.phone}`,
 
-      `• E-mail: ${customer.email}`,
+      `â€¢ E-mail: ${customer.email}`,
 
-      `• Postcode: ${customer.postcode}`,
+      `â€¢ Postcode: ${customer.postcode}`,
 
-      `• Plaats: ${customer.city}`,
+      `â€¢ Plaats: ${customer.city}`,
 
-      `• Exacte wandbreedte: ${customer.wallWidth} cm`,
+      `â€¢ Exacte wandbreedte: ${customer.wallWidth} cm`,
 
-      `• Wandhoogte: ${customer.wallHeight} cm`,
+      `â€¢ Wandhoogte: ${customer.wallHeight} cm`,
 
-      customer.notes ? `• Opmerking: ${customer.notes}` : "",
+      customer.notes ? `â€¢ Opmerking: ${customer.notes}` : "",
 
       "",
 
@@ -633,7 +633,7 @@ export default function CinewallConfigurator() {
 
           >
 
-            Solutionbouw
+            Wallmade
 
           </a>
 
@@ -645,7 +645,7 @@ export default function CinewallConfigurator() {
 
           >
 
-            ← Terug
+            â† Terug
 
           </a>
 
@@ -811,7 +811,7 @@ export default function CinewallConfigurator() {
 
                           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#C17D49] text-sm text-white">
 
-                            ✓
+                            âœ“
 
                           </span>
 
@@ -863,7 +863,7 @@ export default function CinewallConfigurator() {
                     onClick={() => setWidth((current) => Math.max(2, Number((current - 0.5).toFixed(1))))}
                     className="flex h-14 w-14 shrink-0 touch-manipulation select-none items-center justify-center rounded-full border border-black/10 bg-[#F5F1EA] text-3xl font-light active:scale-90 disabled:opacity-25"
                     style={{ WebkitTapHighlightColor: "transparent" }}
-                  >−</button>
+                  >âˆ’</button>
 
                   <div className="min-w-0 flex-1 rounded-[20px] bg-[#1D1D1B] px-3 py-4 text-center text-white">
                     <span className="block text-[11px] uppercase tracking-[0.18em] text-white/45">Breedte</span>
@@ -901,7 +901,7 @@ export default function CinewallConfigurator() {
                 <div className="mt-4 flex items-center justify-between gap-3 border-t border-black/[0.06] pt-4">
                   <div>
                     <p className="text-sm font-medium">Meerprijs breedte</p>
-                    <p className="mt-0.5 text-xs text-black/40">€200 per extra meter</p>
+                    <p className="mt-0.5 text-xs text-black/40">â‚¬200 per extra meter</p>
                   </div>
                   <span className="shrink-0 text-base font-semibold text-[#9B6038]">
                     {widthExtra > 0 ? `+ ${money(widthExtra)}` : "Inbegrepen"}
@@ -1040,7 +1040,7 @@ export default function CinewallConfigurator() {
 
                           {active && (
 
-                            <span className="shrink-0 text-[#C17D49]">✓</span>
+                            <span className="shrink-0 text-[#C17D49]">âœ“</span>
 
                           )}
 
@@ -1140,7 +1140,7 @@ export default function CinewallConfigurator() {
 
                         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#C17D49] text-sm text-white">
 
-                          ✓
+                          âœ“
 
                         </span>
 
@@ -1194,7 +1194,7 @@ export default function CinewallConfigurator() {
 
                   }
 
-                  price="+ €300"
+                  price="+ â‚¬300"
 
                   active={woodInNiches}
 
@@ -1210,7 +1210,7 @@ export default function CinewallConfigurator() {
 
                   description="Complete witte afwerking"
 
-                  price="+ €600"
+                  price="+ â‚¬600"
 
                   active={painting}
 
@@ -1224,7 +1224,7 @@ export default function CinewallConfigurator() {
 
                   description="Inclusief afvoer van het bouwafval"
 
-                  price="+ €500"
+                  price="+ â‚¬500"
 
                   active={removeOld}
 
@@ -1244,7 +1244,7 @@ export default function CinewallConfigurator() {
 
                     <p className="mt-1 text-xs text-black/45">
 
-                      €100 per stroompunt
+                      â‚¬100 per stroompunt
 
                     </p>
 
@@ -1266,7 +1266,7 @@ export default function CinewallConfigurator() {
 
                     >
 
-                      −
+                      âˆ’
 
                     </button>
 
@@ -1330,7 +1330,7 @@ export default function CinewallConfigurator() {
 
                   >
 
-                    <span className="shrink-0 text-[#B97848]">✓</span>
+                    <span className="shrink-0 text-[#B97848]">âœ“</span>
 
                     <span className="min-w-0 break-words text-sm leading-5 text-black/65">
 
@@ -1388,7 +1388,7 @@ export default function CinewallConfigurator() {
 
                   >
 
-                    ×
+                    Ã—
 
                   </button>
 
@@ -1614,7 +1614,7 @@ export default function CinewallConfigurator() {
 
                     <p className="mt-3 break-words font-medium">
 
-                      {selectedCinewall.name} · {width} meter
+                      {selectedCinewall.name} Â· {width} meter
 
                     </p>
 
@@ -1638,7 +1638,7 @@ export default function CinewallConfigurator() {
 
                   >
 
-                    Verstuur via WhatsApp ↗
+                    Verstuur via WhatsApp â†—
 
                   </button>
 
@@ -1722,7 +1722,7 @@ export default function CinewallConfigurator() {
 
                 Bekijk met AI
 
-                <span>→</span>
+                <span>â†’</span>
 
               </Link>
 

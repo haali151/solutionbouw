@@ -45,7 +45,7 @@ export default function DecorProductClient({
             href="/"
             className="text-sm font-medium uppercase tracking-[0.25em]"
           >
-            Solutionbouw
+            Wallmade
           </a>
 
           <a

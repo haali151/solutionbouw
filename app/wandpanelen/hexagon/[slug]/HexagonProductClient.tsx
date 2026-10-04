@@ -45,14 +45,14 @@ export default function HexagonProductPage({
             href="/"
             className="text-sm font-medium uppercase tracking-[0.25em]"
           >
-            Solutionbouw
+            Wallmade
           </a>
 
           <a
             href="/wandpanelen"
             className="text-sm text-neutral-400 transition hover:text-white"
           >
-            ← Terug naar wandpanelen
+            â† Terug naar wandpanelen
           </a>
         </div>
       </header>
@@ -280,7 +280,7 @@ export default function HexagonProductPage({
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    Creëer verschillende geometrische
+                    CreÃ«er verschillende geometrische
                     patronen op de wand.
                   </p>
                 </div>
@@ -355,7 +355,7 @@ export default function HexagonProductPage({
 
             <div>
               <p className="text-sm font-medium">
-                Solutionbouw
+                Wallmade
               </p>
               <p className="mt-2 text-sm leading-6 text-neutral-500">
                 Combineer jouw wandpanelen met een

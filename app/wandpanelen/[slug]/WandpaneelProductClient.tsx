@@ -45,14 +45,14 @@ export default function WandpaneelProductPage({
             href="/"
             className="text-sm font-medium uppercase tracking-[0.25em]"
           >
-            Solutionbouw
+            Wallmade
           </a>
 
           <a
             href="/wandpanelen"
             className="text-sm text-neutral-400 transition hover:text-white"
           >
-            ← Terug naar wandpanelen
+            â† Terug naar wandpanelen
           </a>
         </div>
       </header>

@@ -12,12 +12,12 @@ const projectImages = Array.from(
 );
 
 const contactMessage =
-  "Hallo Wallmade, ik ben geïnteresseerd in een Cinewall of interieur op maat. Ik ontvang graag meer informatie en bespreek graag de mogelijkheden.";
+  "Hallo Wallmade, ik ben geÃ¯nteresseerd in een Cinewall of interieur op maat. Ik ontvang graag meer informatie en bespreek graag de mogelijkheden.";
 
 const whatsappUrl = `https://wa.me/31643583800?text=${encodeURIComponent(contactMessage)}`;
 const instagramUrl = "https://www.instagram.com/solutionbouw.nl/";
 const emailUrl = `mailto:solutionbouw.official@gmail.com?subject=${encodeURIComponent(
-  "Wallmade – informatie en offerte"
+  "Wallmade â€“ informatie en offerte"
 )}&body=${encodeURIComponent(contactMessage)}`;
 
 type Channel = "whatsapp" | "instagram" | "email";
@@ -190,8 +190,8 @@ export default function Home() {
 
   const contacts = [
     { kind: "whatsapp" as Channel, name: "WhatsApp", detail: "+31 6 43583800", href: whatsappUrl },
-    { kind: "instagram" as Channel, name: "Instagram", detail: "@solutionbouw.nl", href: instagramUrl },
-    { kind: "email" as Channel, name: "E-mail", detail: "solutionbouw.official@gmail.com", href: emailUrl },
+    { kind: "instagram" as Channel, name: "Instagram", detail: "Wallmade op Instagram", href: instagramUrl },
+    { kind: "email" as Channel, name: "E-mail", detail: "Neem contact op", href: emailUrl },
   ];
 
   return (
@@ -225,7 +225,7 @@ export default function Home() {
                 <span className="block text-[#D39A68]">Onze expertise.</span>
               </h1>
               <p className="mt-3 max-w-[335px] text-[12.5px] leading-[1.5] text-white/80 sm:max-w-xl sm:text-base">
-                Cinewalls, sfeerhaarden, wandpanelen en interieur op maat. Ontwerp, visualiseer en realiseer alles op één plek.
+                Cinewalls, sfeerhaarden, wandpanelen en interieur op maat. Ontwerp, visualiseer en realiseer alles op Ã©Ã©n plek.
               </p>
               <div className="mt-4 grid grid-cols-[1.08fr_0.92fr] gap-2.5 sm:flex">
                 <Link href="/ai-designer"
@@ -313,7 +313,7 @@ export default function Home() {
               Meer dan <span className="text-[#A76C42]">Cinewalls.</span>
             </h2>
             <p className="max-w-md text-sm leading-6 text-black/50">
-              Eén stijl, meerdere mogelijkheden. Combineer maatwerk met sfeerhaarden en wandpanelen voor een compleet interieur.
+              EÃ©n stijl, meerdere mogelijkheden. Combineer maatwerk met sfeerhaarden en wandpanelen voor een compleet interieur.
             </p>
           </div>
 
@@ -350,7 +350,7 @@ export default function Home() {
             <div>
               <SectionEyebrow light>Wallmade AI</SectionEyebrow>
               <h2 className="mt-4 max-w-xl text-[38px] font-light leading-[0.98] tracking-[-0.045em] sm:text-6xl">
-                Zie jouw ruimte <span className="text-[#D39A68]">vóór</span> we bouwen.
+                Zie jouw ruimte <span className="text-[#D39A68]">vÃ³Ã³r</span> we bouwen.
               </h2>
               <p className="mt-5 max-w-lg text-sm leading-6 text-white/55 sm:text-base">
                 Upload een foto, kies jouw wensen en ontdek hoe jouw nieuwe interieur eruit kan zien.
@@ -419,7 +419,7 @@ export default function Home() {
                 sizes="(min-width:1024px) 45vw,100vw" className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4 rounded-full border border-white/20 bg-black/35 px-4 py-2 text-[10px] text-white backdrop-blur">
-                Maatwerk • direct samenstellen
+                Maatwerk â€¢ direct samenstellen
               </div>
             </div>
           </div>
@@ -466,7 +466,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1500px]">
           <SectionEyebrow>Van idee tot oplevering</SectionEyebrow>
           <h2 className="mt-3 max-w-3xl text-[36px] font-light leading-[1] tracking-[-0.045em] sm:text-6xl">
-            Eén duidelijk proces.
+            EÃ©n duidelijk proces.
           </h2>
 
           <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-[22px] bg-black/10 lg:grid-cols-4">
@@ -575,7 +575,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5 text-[10px] text-white/25">
-            <p>© 2026 Wallmade</p>
+            <p>Â© 2026 Wallmade</p>
             <p>Interieur op maat</p>
           </div>
         </div>
@@ -711,7 +711,7 @@ export default function Home() {
             <Brand />
             <button type="button" onClick={() => setMenuOpen(false)}
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-xl !text-white"
-              aria-label="Menu sluiten">×</button>
+              aria-label="Menu sluiten">Ã—</button>
           </div>
           <nav className="mt-7 flex flex-col">
             {navLinks.map(([name, href]) =>

@@ -6,13 +6,13 @@ export default function FloatingContact() {
   const [open, setOpen] = useState(false);
 
   const whatsappMessage = encodeURIComponent(
-    "Hallo Solutionbouw, ik heb jullie website bekeken en heb interesse in jullie diensten. Ik ontvang graag meer informatie."
+    "Hallo Wallmade, ik heb jullie website bekeken en heb interesse in jullie diensten. Ik ontvang graag meer informatie."
   );
 
-  const emailSubject = encodeURIComponent("Aanvraag via Solutionbouw");
+  const emailSubject = encodeURIComponent("Aanvraag via Wallmade");
 
   const emailBody = encodeURIComponent(
-    "Hallo Solutionbouw,\n\nIk heb jullie website bekeken en heb interesse in jullie diensten.\n\nIk ontvang graag meer informatie.\n\nMet vriendelijke groet,"
+    "Hallo Wallmade,\n\nIk heb jullie website bekeken en heb interesse in jullie diensten.\n\nIk ontvang graag meer informatie.\n\nMet vriendelijke groet,"
   );
 
   return (
