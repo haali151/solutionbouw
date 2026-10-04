@@ -52,7 +52,7 @@ export default function HexagonProductPage({
             href="/wandpanelen"
             className="text-sm text-neutral-400 transition hover:text-white"
           >
-            â† Terug naar wandpanelen
+            ← Terug naar wandpanelen
           </a>
         </div>
       </header>
@@ -280,7 +280,7 @@ export default function HexagonProductPage({
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    CreÃ«er verschillende geometrische
+                    Creëer verschillende geometrische
                     patronen op de wand.
                   </p>
                 </div>

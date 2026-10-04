@@ -388,8 +388,8 @@ function languageLabel(value: Language) {
     auto: "Auto",
     nl: "Nederlands",
     en: "English",
-    ar: "Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¨Ã™Å Ã˜Â©",
-    tr: "TÃƒÂ¼rkÃƒÂ§e",
+    ar: "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",
+    tr: "Türkçe",
     de: "Deutsch",
   };
   return labels[value];
@@ -775,27 +775,27 @@ export default function AIDesigner() {
       "Graag bespreek ik de mogelijkheden en ontvang ik een offerte.",
       "",
       "Mijn ontwerpvoorkeuren:",
-      `Ã¢â‚¬Â¢ Stijl: ${nextDesign.style}`,
-      `Ã¢â‚¬Â¢ TV-formaat: ${nextDesign.tvSize} inch`,
-      `Ã¢â‚¬Â¢ Elektrische haard: ${nextDesign.fireplace}`,
-      `Ã¢â‚¬Â¢ Aantal vakken: ${nextDesign.shelves}`,
+      `• Stijl: ${nextDesign.style}`,
+      `• TV-formaat: ${nextDesign.tvSize} inch`,
+      `• Elektrische haard: ${nextDesign.fireplace}`,
+      `• Aantal vakken: ${nextDesign.shelves}`,
       nextDesign.cinewallWidth &&
-        `Ã¢â‚¬Â¢ Cinewall breedte: ${nextDesign.cinewallWidth}`,
-      `Ã¢â‚¬Â¢ Vakken positie: ${nextDesign.shelfPosition}`,
-      `Ã¢â‚¬Â¢ Vakken vorm: ${nextDesign.shelfShape}`,
-      `Ã¢â‚¬Â¢ Hout: ${nextDesign.woodEnabled}`,
+        `• Cinewall breedte: ${nextDesign.cinewallWidth}`,
+      `• Vakken positie: ${nextDesign.shelfPosition}`,
+      `• Vakken vorm: ${nextDesign.shelfShape}`,
+      `• Hout: ${nextDesign.woodEnabled}`,
       nextDesign.woodEnabled === "Ja" &&
-        `Ã¢â‚¬Â¢ Houttype: ${nextDesign.woodType}`,
+        `• Houttype: ${nextDesign.woodType}`,
       nextDesign.woodEnabled === "Ja" &&
-        `Ã¢â‚¬Â¢ Houtpositie: ${nextDesign.woodPosition}`,
-      `Ã¢â‚¬Â¢ Verlichting: ${nextDesign.lightingEnabled}`,
+        `• Houtpositie: ${nextDesign.woodPosition}`,
+      `• Verlichting: ${nextDesign.lightingEnabled}`,
       nextDesign.lightingEnabled === "Ja" &&
-        `Ã¢â‚¬Â¢ Lichtkleur: ${nextDesign.lightingColor}`,
-      `Ã¢â‚¬Â¢ TV-meubel: ${nextDesign.cabinetType}`,
-      `Ã¢â‚¬Â¢ Wandkleur: ${nextDesign.wallColor}`,
-      `Ã¢â‚¬Â¢ Afwerking: ${nextDesign.finishStyle}`,
+        `• Lichtkleur: ${nextDesign.lightingColor}`,
+      `• TV-meubel: ${nextDesign.cabinetType}`,
+      `• Wandkleur: ${nextDesign.wallColor}`,
+      `• Afwerking: ${nextDesign.finishStyle}`,
       config.price &&
-        `Ã¢â‚¬Â¢ Eerder getoonde prijsindicatie: ${config.price} (te bevestigen)`,
+        `• Eerder getoonde prijsindicatie: ${config.price} (te bevestigen)`,
       "",
       "Kunnen jullie aangeven wat mogelijk is en wat de kosten zijn?",
     ]
@@ -1092,14 +1092,14 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
               role: "assistant",
               content:
                 language === "ar"
-                  ? "Ã˜ÂªÃ™â€¦ Ã˜ÂªÃ˜Â­Ã˜Â¯Ã™Å Ã˜Â« Ã˜Â§Ã™â€žÃ˜ÂªÃ˜ÂµÃ™â€¦Ã™Å Ã™â€¦ Ã˜Â¹Ã™â€žÃ™â€° Ã™â€ Ã™ÂÃ˜Â³ Ã˜Â§Ã™â€žÃ˜ÂµÃ™Ë†Ã˜Â±Ã˜Â© Ã¢Å“â€œ"
+                  ? "تم تحديث التصميم على نفس الصورة ✓"
                   : language === "tr"
-                    ? "TasarÃ„Â±m aynÃ„Â± gÃƒÂ¶rsel ÃƒÂ¼zerinde gÃƒÂ¼ncellendi Ã¢Å“â€œ"
+                    ? "Tasarım aynı görsel üzerinde güncellendi ✓"
                     : language === "de"
-                      ? "Das Design wurde im selben Bild aktualisiert Ã¢Å“â€œ"
+                      ? "Das Design wurde im selben Bild aktualisiert ✓"
                       : language === "en"
-                        ? "The design has been updated on the same image Ã¢Å“â€œ"
-                        : "Het ontwerp is op dezelfde afbeelding bijgewerkt Ã¢Å“â€œ",
+                        ? "The design has been updated on the same image ✓"
+                        : "Het ontwerp is op dezelfde afbeelding bijgewerkt ✓",
             },
           ]);
         }
@@ -1119,7 +1119,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
           role: "assistant",
           content:
             language === "ar"
-              ? "Ã˜ÂµÃ˜Â§Ã˜Â± Ã˜Â®Ã˜Â·Ã˜Â£ Ã˜Â£Ã˜Â«Ã™â€ Ã˜Â§Ã˜Â¡ Ã™â€¦Ã˜Â¹Ã˜Â§Ã™â€žÃ˜Â¬Ã˜Â© Ã˜Â§Ã™â€žÃ˜Â·Ã™â€žÃ˜Â¨. Ã˜Â¬Ã˜Â±Ã™â€˜Ã˜Â¨ Ã™â€¦Ã˜Â±Ã˜Â© Ã˜Â«Ã˜Â§Ã™â€ Ã™Å Ã˜Â©."
+              ? "ØµØ§Ø± Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ù…Ø¹Ø§Ù„Ø¬Ø© Ø§Ù„Ø·Ù„Ø¨. Ø¬Ø±Ù‘Ø¨ Ù…Ø±Ø© Ø«Ø§Ù†ÙŠØ©."
               : "Er ging iets mis bij het verwerken van je verzoek. Probeer opnieuw.",
         },
       ]);
@@ -1155,14 +1155,14 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
             role: "assistant",
             content:
               language === "ar"
-                ? "Ã˜Â±Ã˜Â¬Ã˜Â¹Ã˜Âª Ã™â€žÃ™â€žÃ˜ÂªÃ˜ÂµÃ™â€¦Ã™Å Ã™â€¦ Ã˜Â§Ã™â€žÃ˜Â³Ã˜Â§Ã˜Â¨Ã™â€š Ã¢Å“â€œ"
+                ? "رجعت للتصميم السابق ✓"
                 : language === "tr"
-                  ? "Ãƒâ€“nceki tasarÃ„Â±ma geri dÃƒÂ¶nÃƒÂ¼ldÃƒÂ¼ Ã¢Å“â€œ"
+                  ? "Önceki tasarıma geri dönüldü ✓"
                   : language === "de"
-                    ? "Zum vorherigen Design zurÃƒÂ¼ckgekehrt Ã¢Å“â€œ"
+                    ? "Zum vorherigen Design zurückgekehrt ✓"
                     : language === "en"
-                      ? "Returned to the previous design Ã¢Å“â€œ"
-                      : "Terug naar het vorige ontwerp Ã¢Å“â€œ",
+                      ? "Returned to the previous design ✓"
+                      : "Terug naar het vorige ontwerp ✓",
           },
         ]);
       }
@@ -1243,7 +1243,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
             href="/"
             className="flex shrink-0 items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.025] px-4 py-2.5 text-xs text-neutral-300"
           >
-            Ã¢â€ Â Terug
+            ← Terug
           </a>
         </div>
       </nav>
@@ -1458,7 +1458,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
                       onClick={() => setMobileChatOpen(false)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.025] text-lg text-[#d4b477] xl:hidden"
                     >
-                      Ãƒâ€”
+                      ×
                     </button>
 
                     <select
@@ -1582,7 +1582,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
                 </div>
 
                 <p className="mt-2 text-center text-[9px] text-neutral-700">
-                  Nederlands Ã‚Â· English Ã‚Â· Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¨Ã™Å Ã˜Â© Ã‚Â· TÃƒÂ¼rkÃƒÂ§e Ã‚Â· Deutsch
+                  Nederlands · English · العربية · Türkçe · Deutsch
                 </p>
               </div>
             </div>
@@ -1644,7 +1644,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
               {[
                 ["01", "Upload"],
                 ["02", "Ontwerp"],
-                ["Ã¢Å“Â¦", "Verfijn met AI"],
+                ["✦", "Verfijn met AI"],
               ].map(([number, title], index) => (
                 <div
                   key={title}
@@ -1721,7 +1721,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
 
                     <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/[0.05] bg-white/[0.025] px-3 py-2 text-[9px] text-neutral-600">
                       JPG, PNG of WebP
-                      <span>Ã¢â‚¬Â¢</span>
+                      <span>•</span>
                       Max. 10 MB
                     </div>
                   </div>
@@ -2406,7 +2406,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
                   {loading ? (
                     <>
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                      AI creÃƒÂ«ert jouw ontwerp... {seconds}s
+                      AI creëert jouw ontwerp... {seconds}s
                     </>
                   ) : (
                     <>
@@ -2505,7 +2505,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
               onClick={() => setContactOpen(false)}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.025] text-lg text-neutral-500"
             >
-              Ãƒâ€”
+              ×
             </button>
           </div>
 
@@ -2571,7 +2571,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
 
           <details className="mt-5 text-xs text-neutral-600">
             <summary className="cursor-pointer select-none">
-              Bericht bekijken of kopiÃƒÂ«ren
+              Bericht bekijken of kopiëren
             </summary>
 
             <textarea
@@ -2587,7 +2587,7 @@ const cleanImage = await normalizeImageForUpload(sourceFile);
               onClick={copyMessage}
               className="mt-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-white"
             >
-              {copied ? "Gekopieerd Ã¢Å“â€œ" : "Kopieer bericht"}
+              {copied ? "Gekopieerd ✓" : "Kopieer bericht"}
             </button>
           </details>
         </div>

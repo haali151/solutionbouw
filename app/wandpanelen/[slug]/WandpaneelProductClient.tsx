@@ -52,7 +52,7 @@ export default function WandpaneelProductPage({
             href="/wandpanelen"
             className="text-sm text-neutral-400 transition hover:text-white"
           >
-            â† Terug naar wandpanelen
+            ← Terug naar wandpanelen
           </a>
         </div>
       </header>

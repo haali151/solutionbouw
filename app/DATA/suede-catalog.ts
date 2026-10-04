@@ -77,7 +77,7 @@ export const suedeCatalog: CatalogSuede[] =
 
         productType:
           product.productType ||
-          "SuÃƒÂ¨de akoestisch wandpaneel",
+          "Suède akoestisch wandpaneel",
 
         // Prijscorrectie
         price:

@@ -53,7 +53,7 @@ export default function SuedeProductPage({
             href="/wandpanelen"
             className="text-sm text-neutral-400 transition hover:text-white"
           >
-            â† Terug naar wandpanelen
+            ← Terug naar wandpanelen
           </a>
         </div>
       </header>
@@ -85,7 +85,7 @@ export default function SuedeProductPage({
               )}
 
               <span className="absolute bottom-5 left-5 rounded-full border border-white/10 bg-black/70 px-4 py-2 text-xs uppercase tracking-[0.2em] backdrop-blur-md">
-                SuÃ¨de
+                Suède
               </span>
 
             </div>
@@ -132,7 +132,7 @@ export default function SuedeProductPage({
             </h1>
 
             <p className="mt-4 text-sm text-neutral-500">
-              SuÃ¨de akoestisch wandpaneel
+              Suède akoestisch wandpaneel
             </p>
 
             {/* PRICE */}
@@ -173,7 +173,7 @@ export default function SuedeProductPage({
             <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
 
               <p className="text-xs uppercase tracking-[0.25em] text-neutral-500">
-                Over SuÃ¨de wandpanelen
+                Over Suède wandpanelen
               </p>
 
               <h2 className="mt-3 text-xl font-medium">
@@ -181,9 +181,9 @@ export default function SuedeProductPage({
               </h2>
 
               <p className="mt-4 leading-7 text-neutral-400">
-                SuÃ¨de akoestische wandpanelen combineren
+                Suède akoestische wandpanelen combineren
                 een zachte, luxe uitstraling met een
-                moderne wandafwerking. De SuÃ¨de look
+                moderne wandafwerking. De Suède look
                 brengt warmte en rust in het interieur
                 en vormt een stijlvol alternatief voor
                 traditionele houten wandpanelen.
@@ -290,7 +290,7 @@ export default function SuedeProductPage({
             <div className="mt-10 border-t border-white/10 pt-8">
 
               <h2 className="text-xl font-medium">
-                Waarom SuÃ¨de wandpanelen?
+                Waarom Suède wandpanelen?
               </h2>
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -301,7 +301,7 @@ export default function SuedeProductPage({
                   </p>
 
                   <p className="mt-2 text-sm leading-6 text-neutral-500">
-                    De SuÃ¨de look geeft de wand een
+                    De Suède look geeft de wand een
                     warme en comfortabele uitstraling.
                   </p>
                 </div>
@@ -401,7 +401,7 @@ export default function SuedeProductPage({
               </p>
 
               <p className="mt-2 text-sm leading-6 text-neutral-500">
-                Combineer jouw SuÃ¨de wandpanelen
+                Combineer jouw Suède wandpanelen
                 met een complete Cinewall op maat.
               </p>
             </div>
