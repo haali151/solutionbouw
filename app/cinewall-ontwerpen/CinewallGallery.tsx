@@ -77,6 +77,9 @@ export default function CinewallGallery() {
             />
 
             <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+            <div className="absolute bottom-3 left-3 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-medium tracking-wide text-white backdrop-blur-md">
+              Ontwerp {String(design.id).padStart(2, "0")}
+            </div>
 
             <div className="absolute bottom-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-lg text-black opacity-0 shadow-sm backdrop-blur transition-opacity group-hover:opacity-100">
               ↗
@@ -142,9 +145,16 @@ export default function CinewallGallery() {
             ›
           </button>
 
+          <a
+            href={`/cinewall-configurator?design=${String(designs[selectedIndex].id).padStart(2, "0")}`}
+            onClick={(event) => event.stopPropagation()}
+            className="absolute bottom-16 left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-6 py-3 text-sm font-semibold text-black shadow-lg transition-transform hover:scale-[1.03]"
+          >
+            Kies dit ontwerp
+          </a>
           {/* COUNTER */}
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-2 text-sm text-white backdrop-blur-md">
-            {selectedIndex + 1} / {designs.length}
+            Ontwerp {String(designs[selectedIndex].id).padStart(2, "0")} · {selectedIndex + 1} / {designs.length}
           </div>
         </div>
       )}

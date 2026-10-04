@@ -37,16 +37,15 @@ export default function CinewallsPage() {
       <section className="px-5 pb-8 pt-12 sm:px-8 lg:px-12 lg:pb-14 lg:pt-20">
         <div className="mx-auto max-w-[1500px]">
           <p className="text-[10px] uppercase tracking-[0.28em] text-[#976746]">
-            Cinewall inspiratie
+            Cinewall op maat
           </p>
           <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_.65fr] lg:items-end">
             <h1 className="max-w-4xl text-[48px] font-light leading-[0.95] tracking-[-0.045em] sm:text-7xl lg:text-[92px]">
-              Kies eerst jouw
-              <span className="block text-[#A76C42]">stijl.</span>
+              Cinewall op maat
+              <span className="block text-[#A76C42]">laten maken.</span>
             </h1>
             <p className="max-w-lg text-sm leading-7 text-black/50 sm:text-base">
-              Bekijk onze Cinewall ontwerpen en gerealiseerde projecten. Vind een stijl
-              die bij jouw ruimte past en stel daarna pas de afmetingen en opties samen.
+              Ontdek gerealiseerde cinewalls en verschillende stijlen. Kies wat bij jouw ruimte past en stel daarna jouw cinewall op maat samen met haard, nissen, verlichting en tv-meubel.
             </p>
           </div>
         </div>
@@ -89,6 +88,87 @@ export default function CinewallsPage() {
             ))}
           </div>
 
+          <div className="mt-8 rounded-[30px] border border-black/10 bg-white/50 p-7 sm:p-10 lg:flex lg:items-center lg:justify-between lg:p-12">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[#976746]">
+                Cinewall kosten
+              </p>
+
+              <h2 className="mt-3 max-w-2xl text-3xl font-light tracking-[-0.035em] sm:text-5xl">
+                Wat kost een cinewall op maat?
+              </h2>
+
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-black/50">
+                De prijs hangt af van de breedte, het aantal nissen, de elektrische haard,
+                verlichting, houtafwerking en het tv-meubel. Stel jouw cinewall samen en
+                bekijk direct een prijsindicatie.
+              </p>
+            </div>
+
+            <Link
+              href="/cinewall-configurator"
+              className="mt-7 inline-flex rounded-full bg-[#171513] px-7 py-4 text-sm font-medium !text-white lg:mt-0"
+              style={{ color: "#fff", WebkitTextFillColor: "#fff" }}
+            >
+              Bereken mijn prijs
+            </Link>
+          </div>
+          <section className="mt-12">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[#976746]">
+              Veelgestelde vragen
+            </p>
+
+            <h2 className="mt-3 max-w-3xl text-3xl font-light tracking-[-0.035em] sm:text-5xl">
+              Veelgestelde vragen over cinewalls
+            </h2>
+
+            <div className="mt-7 divide-y divide-black/10 border-y border-black/10">
+              <details className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium sm:text-lg">
+                  Wat kost een cinewall op maat?
+                  <span className="text-xl font-light transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-black/55">
+                  De prijs hangt af van onder andere de breedte, het aantal nissen,
+                  de elektrische haard, verlichting, houtafwerking en het tv-meubel.
+                  Via onze configurator krijg je direct een prijsindicatie.
+                </p>
+              </details>
+
+              <details className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium sm:text-lg">
+                  Kan ik een cinewall met elektrische haard kiezen?
+                  <span className="text-xl font-light transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-black/55">
+                  Ja. Je kunt in de configurator een elektrische sfeerhaard kiezen
+                  en deze combineren met jouw gewenste cinewall-uitvoering.
+                </p>
+              </details>
+
+              <details className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium sm:text-lg">
+                  Welke opties kan ik zelf samenstellen?
+                  <span className="text-xl font-light transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-black/55">
+                  Je kunt onder andere de breedte, nissen, elektrische haard,
+                  verlichting, houtafwerking en het tv-meubel kiezen.
+                </p>
+              </details>
+
+              <details className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium sm:text-lg">
+                  Hoe vraag ik een offerte aan?
+                  <span className="text-xl font-light transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-black/55">
+                  Stel eerst jouw cinewall samen. Daarna kun je jouw configuratie
+                  en prijsindicatie rechtstreeks via WhatsApp naar Wallmade sturen.
+                </p>
+              </details>
+            </div>
+          </section>
           <div className="mt-8 rounded-[30px] bg-[#1A1816] p-7 text-white sm:p-10 lg:flex lg:items-center lg:justify-between lg:p-14">
             <div>
               <p className="text-[10px] uppercase tracking-[0.25em] text-[#D4A77F]">

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
 type Fireplace = {
@@ -323,6 +323,8 @@ export default function CinewallConfigurator() {
 
   const [extraPowerPoints, setExtraPowerPoints] = useState(0);
 
+  const [inspirationDesign, setInspirationDesign] = useState("");
+
   const [quoteOpen, setQuoteOpen] = useState(false);
 
   const [customer, setCustomer] = useState<CustomerForm>({
@@ -344,6 +346,14 @@ export default function CinewallConfigurator() {
     notes: "",
 
   });
+
+  useEffect(() => {
+    const design = new URLSearchParams(window.location.search).get("design");
+
+    if (design && /^\d{1,2}$/.test(design)) {
+      setInspirationDesign(design.padStart(2, "0"));
+    }
+  }, []);
 
   const quoteRef = useRef<HTMLElement>(null);
 
@@ -492,6 +502,9 @@ export default function CinewallConfigurator() {
       "Ik wil graag een offerte aanvragen voor deze Cinewall.",
       "",
       "MIJN CONFIGURATIE",
+      ...(inspirationDesign
+        ? [`- Inspiratie ontwerp: ${inspirationDesign}`]
+        : []),
       `- Model: ${selectedCinewall.name}`,
       `- Cinewall breedte: ${width} meter`,
       `- Nissen: ${selectedCinewall.shelves}`,

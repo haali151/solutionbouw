@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Cinewall op Maat | Cinewall Laten Maken",
@@ -64,6 +64,44 @@ const schema = {
         name: "Nederland",
       },
       url: "https://wallmade.nl/cinewalls",
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://wallmade.nl/cinewalls/#faq",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Wat kost een cinewall op maat?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "De prijs hangt af van onder andere de breedte, het aantal nissen, de elektrische haard, verlichting, houtafwerking en het tv-meubel. Via de configurator krijg je direct een prijsindicatie.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Kan ik een cinewall met elektrische haard kiezen?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Ja. Je kunt in de configurator een elektrische sfeerhaard kiezen en deze combineren met jouw gewenste cinewall-uitvoering.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Welke opties kan ik zelf samenstellen?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Je kunt onder andere de breedte, nissen, elektrische haard, verlichting, houtafwerking en het tv-meubel kiezen.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Hoe vraag ik een offerte aan?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Stel eerst jouw cinewall samen. Daarna kun je jouw configuratie en prijsindicatie rechtstreeks via WhatsApp naar Wallmade sturen.",
+          },
+        },
+      ],
     },
     {
       "@type": "BreadcrumbList",

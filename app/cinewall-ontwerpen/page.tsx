@@ -17,17 +17,17 @@ export default function CinewallOntwerpenPage() {
       <section className="px-5 pb-10 pt-28 text-center md:pb-14 md:pt-36">
         <div className="mx-auto max-w-3xl">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-black/50">
-            Inspiratie
+            Cinewall inspiratie
           </p>
 
           <h1 className="text-4xl font-semibold tracking-tight text-black md:text-6xl">
-            Cinewall Ontwerpen
+            Cinewall ontwerpen & inspiratie
           </h1>
 
           <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-black/60 md:text-lg">
-            Ontdek onze cinewall ontwerpen en laat je inspireren voor jouw
-            woonkamer. Van strakke, moderne ontwerpen tot cinewalls met
-            elektrische haard, houtpanelen en sfeervolle nissen.
+            Bekijk verschillende cinewall ontwerpen en ontdek welke stijl bij
+            jouw woonkamer past. Van strak en minimalistisch tot warm hout,
+            sfeervolle nissen en een elektrische haard.
           </p>
         </div>
       </section>
@@ -38,22 +38,65 @@ export default function CinewallOntwerpenPage() {
       </section>
 
       {/* CTA */}
+      <section className="mx-auto max-w-7xl px-5 pb-20 md:px-6">
+        <div className="rounded-[32px] border border-black/10 bg-white/40 p-7 md:p-12">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-black/45">
+            Ontdek jouw stijl
+          </p>
+
+          <h2 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-black md:text-5xl">
+            Welke cinewall stijl past bij jou?
+          </h2>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-black/10 bg-white/60 p-6">
+              <h3 className="text-lg font-semibold text-black">
+                Strak & minimalistisch
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-black/55">
+                Een rustige cinewall met strakke lijnen en een moderne,
+                tijdloze uitstraling.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-black/10 bg-white/60 p-6">
+              <h3 className="text-lg font-semibold text-black">
+                Warm hout & wandpanelen
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-black/55">
+                Combineer jouw cinewall met houtaccenten of wandpanelen voor
+                extra warmte en karakter.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-black/10 bg-white/60 p-6">
+              <h3 className="text-lg font-semibold text-black">
+                Met haard & nissen
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-black/55">
+                Kies een elektrische sfeerhaard en sfeervolle nissen voor een
+                complete cinewall op maat.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="border-t border-black/10 px-5 py-20 text-center">
         <div className="mx-auto max-w-2xl">
           <h2 className="text-3xl font-semibold tracking-tight text-black md:text-4xl">
-            Jouw ideale cinewall gevonden?
+            Jouw favoriete ontwerp gevonden?
           </h2>
 
           <p className="mt-4 leading-7 text-black/60">
-            Laat ons weten welk ontwerp je aanspreekt. We maken jouw cinewall
-            volledig op maat.
+            Stel jouw cinewall daarna zelf samen. Kies de breedte, nissen,
+            elektrische haard, afwerking en andere opties.
           </p>
 
           <a
-            href="/offerte"
+            href="/cinewall-configurator"
             className="mt-8 inline-flex rounded-full bg-black px-8 py-4 text-sm font-semibold text-white transition-transform hover:scale-[1.03]"
           >
-            Vraag een offerte aan
+            Stel jouw cinewall samen
           </a>
         </div>
       </section>
