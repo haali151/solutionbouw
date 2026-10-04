@@ -313,9 +313,18 @@ export default function Home() {
             <h2 className="max-w-3xl text-[36px] font-light leading-[0.98] tracking-[-0.045em] sm:text-6xl lg:text-7xl">
               Meer dan <span className="text-[#A76C42]">Cinewalls.</span>
             </h2>
-            <p className="max-w-md text-sm leading-6 text-black/50">
-              Combineer een cinewall op maat met een elektrische sfeerhaard en wandpanelen voor een compleet interieur dat bij jouw ruimte past.
-            </p>
+            <div className="max-w-md">
+              <p className="text-sm leading-6 text-black/50">
+                Combineer een cinewall op maat met een elektrische sfeerhaard en wandpanelen voor een compleet interieur dat bij jouw ruimte past.
+              </p>
+
+              <Link
+                href="/cinewall-met-haard"
+                className="mt-3 inline-flex text-sm font-medium text-[#8B5E3C] underline decoration-[#8B5E3C]/25 underline-offset-4 hover:decoration-[#8B5E3C]"
+              >
+                Ontdek cinewalls met elektrische haard
+              </Link>
+            </div>
           </div>
 
           <div className="mt-7 grid gap-3 lg:grid-cols-2 lg:grid-rows-2">

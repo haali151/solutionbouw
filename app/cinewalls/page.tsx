@@ -142,7 +142,13 @@ export default function CinewallsPage() {
                 </summary>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-black/55">
                   Ja. Je kunt in de configurator een elektrische sfeerhaard kiezen
-                  en deze combineren met jouw gewenste cinewall-uitvoering.
+                  en deze combineren met jouw gewenste cinewall-uitvoering.{" "}
+                  <Link
+                    href="/cinewall-met-haard"
+                    className="font-medium text-black underline decoration-black/20 underline-offset-4 hover:decoration-black"
+                  >
+                    Lees meer over een cinewall met haard.
+                  </Link>
                 </p>
               </details>
 
